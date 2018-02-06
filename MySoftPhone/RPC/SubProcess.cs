@@ -1,20 +1,17 @@
 ﻿using System;
 using System.Diagnostics;
-using System.IO;
-using System.IO.Pipes;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace MySoftPhone.RPC
 {
+    //父进程创建的子进程
     public class SubProcess
     {
         private readonly ProcessStartInfo _processStartInfo;
-        private AnonymousPipeServerStream _anonymousPipeServerStream;
-        private StreamReader _pipeReader;
         private bool _isSubProcessExit;
         private Process _subProcess;
         private readonly string _inputArgs;
+
+        private AnonymousPipeServer _anonymousPipeServer;
 
         public SubProcess(ProcessStartInfo processStartInfo)
         {
@@ -25,16 +22,12 @@ namespace MySoftPhone.RPC
 
         public void Start()
         {
-            _anonymousPipeServerStream?.Dispose();
-            _anonymousPipeServerStream =
-                new AnonymousPipeServerStream(PipeDirection.In, HandleInheritability.Inheritable)
-                {
-                    ReadMode = PipeTransmissionMode.Byte
-                };
-            _pipeReader?.Dispose();
-            _pipeReader = new StreamReader(_anonymousPipeServerStream);
+            _anonymousPipeServer?.Stop();
+            _anonymousPipeServer = new AnonymousPipeServer();
+            _anonymousPipeServer.MessageReceived += _anonymousPipeServer_MessageReceived;
+            var serverInfo = _anonymousPipeServer.GetServerInfo();
             var newArgs =
-                $"${_anonymousPipeServerStream.GetClientHandleAsString()} ${Process.GetCurrentProcess().Id} {_inputArgs}";
+                $"${serverInfo} ${Process.GetCurrentProcess().Id} {_inputArgs}";
             _processStartInfo.Arguments = newArgs;
             _subProcess = new Process
             {
@@ -44,8 +37,13 @@ namespace MySoftPhone.RPC
             _subProcess.Exited += SubProcess_Exited;
             _subProcess.Start();
             _isSubProcessExit = false;
-            _anonymousPipeServerStream.DisposeLocalCopyOfClientHandle();
-            Task.Factory.StartNew(ReadMessage);
+            _anonymousPipeServer.AfterSubProcessStart();
+            _anonymousPipeServer.Start();
+        }
+
+        private void _anonymousPipeServer_MessageReceived(string obj)
+        {
+            MessageReceived?.Invoke(this, obj);
         }
 
         private void SubProcess_Exited(object sender, EventArgs e)
@@ -54,23 +52,16 @@ namespace MySoftPhone.RPC
                 SubProcessExited?.Invoke(this);
         }
 
-        void ReadMessage()
-        {
-            while (!_isSubProcessExit)
-            {
-                var msg = _pipeReader?.ReadLine();
-                if (!string.IsNullOrWhiteSpace(msg))
-                    MessageReceived?.Invoke(this, msg);
-                Thread.Sleep(500);
-            }
-        }
-
         public void Stop()
         {
-            _isSubProcessExit = true;
-            _anonymousPipeServerStream?.Dispose();
-            _pipeReader?.Dispose();
-            _subProcess.Kill();
+            _anonymousPipeServer?.Stop();
+            if (!_subProcess.HasExited)
+                _subProcess.Kill();
+        }
+
+        public void SendMessage(string msg)
+        {
+            _anonymousPipeServer?.SendMessage(msg);
         }
 
         public int? ProcessId => _subProcess?.Id;

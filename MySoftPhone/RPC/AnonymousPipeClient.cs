@@ -4,8 +4,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Pipes;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -22,6 +20,10 @@ namespace MySoftPhone.RPC
 
         private bool _stop;
 
+        public AnonymousPipeClient(string arg) : this(new[] { arg })
+        {
+        }
+
         public AnonymousPipeClient(string[] argStrings)
         {
             if (argStrings == null) throw new ArgumentNullException(nameof(argStrings));
@@ -37,14 +39,14 @@ namespace MySoftPhone.RPC
                 _otherArgs.Add(argString);
             }
             if (string.IsNullOrWhiteSpace(pipeServerInfo)) throw new InvalidOperationException("输入参数中没有包含服务器信息的相关参数");
-            var info = pipeServerInfo.Split(new char['-'], StringSplitOptions.RemoveEmptyEntries);
+            var info = pipeServerInfo.Split(new char[] { '-' }, StringSplitOptions.RemoveEmptyEntries);
             if (info.Length != 2) throw new InvalidOperationException("服务器参数信息不正确");
 
             _readPipeStream = new AnonymousPipeClientStream(PipeDirection.In, info[0]);
             if (_readPipeStream == null) throw new Exception("参数无效，无法和主进程通信！");
             _readPipeStream.ReadMode = PipeTransmissionMode.Byte;
 
-            _writePipeStream = new AnonymousPipeClientStream(PipeDirection.Out, info[0]);
+            _writePipeStream = new AnonymousPipeClientStream(PipeDirection.Out, info[1]);
             if (_writePipeStream == null) throw new Exception("参数无效，无法和主进程通信！");
             _writePipeStream.ReadMode = PipeTransmissionMode.Byte;
         }
@@ -60,6 +62,12 @@ namespace MySoftPhone.RPC
         public void Stop()
         {
             _stop = true;
+        }
+
+        public void SendMessage(string message)
+        {
+            _messageConcurrentQueue.Enqueue(message);
+            _autoResetEvent.Set();
         }
 
         void DoSend()

@@ -9,32 +9,39 @@ using System.Threading.Tasks;
 
 namespace MySoftPhone.RPC
 {
+    /// <summary>
+    /// 子进程拥有的父进程
+    /// </summary>
     public class ParentProcess : IDisposable
     {
         private readonly int _parentProcessId;
-        private bool _stop;
-        private readonly ConcurrentQueue<string> _messageConcurrentQueue = new ConcurrentQueue<string>();
-        private readonly AutoResetEvent _autoResetEvent = new AutoResetEvent(false);
-        private readonly PipeStream _pipeClient;
-
+        private readonly AnonymousPipeClient _anonymousPipeClient;
         public event Action ParentProcessExit;
+        public event Action<string> MessageReceived;
+        private bool _stop;
 
         public ParentProcess(string[] args)
         {
             Console.WriteLine(string.Join(" ", args));
             if (args.Length > 1 && args[0].StartsWith("$") && args[1].StartsWith("$"))
             {
-                _pipeClient = new AnonymousPipeClientStream(PipeDirection.Out, args[0].Substring(1));
-                if (_pipeClient == null) throw new Exception("参数无效，无法和主进程通信！");
-                _pipeClient.ReadMode = PipeTransmissionMode.Byte;
+                _anonymousPipeClient = new AnonymousPipeClient(args[0].Substring(1));
                 _parentProcessId = Convert.ToInt32(args[1].Substring(1));
                 InputArgs = args.Skip(2).ToArray();
-                Task.Factory.StartNew(DoSend);
             }
             else
             {
                 InputArgs = args;
             }
+            if (_anonymousPipeClient == null) throw new Exception("无法获取服务器连接信息");
+            _anonymousPipeClient.MessageReceived += _anonymousPipeClient_MessageReceived;
+            _anonymousPipeClient.Start();
+            Task.Factory.StartNew(DoCheckParentProcess);
+        }
+
+        private void _anonymousPipeClient_MessageReceived(string obj)
+        {
+            MessageReceived?.Invoke(obj);
         }
 
         public string[] InputArgs { get; }
@@ -42,38 +49,27 @@ namespace MySoftPhone.RPC
         public void Dispose()
         {
             _stop = true;
+            _anonymousPipeClient?.Stop();
         }
 
         public void SendMessage(string message)
         {
-            _messageConcurrentQueue.Enqueue(message);
-            _autoResetEvent.Set();
+            _anonymousPipeClient?.SendMessage(message);
         }
 
-        void DoSend()
+        void DoCheckParentProcess()
         {
-            using (StreamWriter sw = new StreamWriter(_pipeClient))
+            while (!_stop)
             {
-                while (!_stop)
+                try
                 {
-                    try
-                    {
-                        Process.GetProcessById(_parentProcessId);
-                    }
-                    catch
-                    {
-                        ParentProcessExit?.Invoke();
-                    }
-                    _autoResetEvent.Reset();
-                    while (_messageConcurrentQueue.TryDequeue(out var msg))
-                    {
-                        Console.WriteLine("正在写入消息" + msg);
-                        sw.WriteLine(msg);
-                        sw.Flush();
-                        _pipeClient.WaitForPipeDrain();
-                    }
-                    _autoResetEvent.WaitOne(1000);
+                    Process.GetProcessById(_parentProcessId);
                 }
+                catch
+                {
+                    ParentProcessExit?.Invoke();
+                }
+                Thread.Sleep(500);
             }
         }
     }
