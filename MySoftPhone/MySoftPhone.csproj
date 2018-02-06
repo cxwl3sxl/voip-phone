@@ -59,6 +59,8 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="PhoneProxy.cs" />
+    <Compile Include="RealPhone.cs" />
     <Compile Include="RPC\AnonymousPipeClient.cs" />
     <Compile Include="RPC\AnonymousPipeServer.cs" />
     <Compile Include="RPC\ParentProcess.cs" />
