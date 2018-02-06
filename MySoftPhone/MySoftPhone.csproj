@@ -59,8 +59,8 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="RPC\AnonymousPipeReader.cs" />
-    <Compile Include="RPC\AnonymousPipeWriter.cs" />
+    <Compile Include="RPC\AnonymousPipeClient.cs" />
+    <Compile Include="RPC\AnonymousPipeServer.cs" />
     <Compile Include="RPC\ParentProcess.cs" />
     <Compile Include="RPC\SubProcess.cs" />
     <Compile Include="SettingWindow.xaml.cs">
