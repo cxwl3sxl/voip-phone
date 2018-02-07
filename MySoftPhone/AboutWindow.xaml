@@ -1,0 +1,15 @@
+﻿<Window x:Class="MySoftPhone.AboutWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:MySoftPhone"
+        mc:Ignorable="d"
+        Title="关于" Height="150" ResizeMode="NoResize" WindowStartupLocation="CenterOwner" Width="300">
+    <StackPanel Margin="10">
+        <TextBlock>一个基于Ozeki.VoIP.SDK的软电话</TextBlock>
+        <TextBlock>支持自行添加多个电话分机</TextBlock>
+        <TextBlock>源码地址：</TextBlock>
+        <TextBlock Foreground="Blue" Cursor="Hand"  MouseLeftButtonDown="UIElement_OnMouseLeftButtonDown">https://github.com/cxwl3sxl/voip-phone</TextBlock>
+    </StackPanel>
+</Window>
