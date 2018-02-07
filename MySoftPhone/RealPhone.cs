@@ -8,7 +8,7 @@ using Ozeki.Media.MediaHandlers;
 
 namespace MySoftPhone
 {
-    public class RealPhone
+    public class RealPhone : IDisposable
     {
         ISoftPhone softPhone;
         IPhoneLine phoneLine;
@@ -216,6 +216,12 @@ namespace MySoftPhone
 
                 call = null;
             }
+        }
+
+        public void Dispose()
+        {
+            phoneLine?.Dispose();
+            softPhone?.Close();
         }
 
         /// <summary>

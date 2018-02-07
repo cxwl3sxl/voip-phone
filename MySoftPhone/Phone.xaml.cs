@@ -18,6 +18,7 @@ namespace MySoftPhone
         public Phone()
         {
             InitializeComponent();
+            Disable();
         }
 
         private void UIElement_OnMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
@@ -76,6 +77,11 @@ namespace MySoftPhone
 
         private void buttonPickUp_Click(object sender, RoutedEventArgs e)
         {
+            if (LabelNumber.Content != null && LabelNumber.Content.ToString() == Setting.Number)
+            {
+                LabelNumber.Content = "";
+                return;
+            }
             _phoneProxy.PickUp(LabelNumber.Content?.ToString());
         }
 
@@ -106,33 +112,23 @@ namespace MySoftPhone
             if (Setting == null)
             {
                 MessageBox.Show("电话尚未初始化！");
-                foreach (var child in GridButtons.Children)
-                {
-                    if (child is Button btn)
-                    {
-                        btn.IsEnabled = false;
-                    }
-                }
-                btnSetting.IsEnabled = true;
+                Disable();
             }
             else
             {
-                foreach (var child in GridButtons.Children)
-                {
-                    if (child is Button btn)
-                    {
-                        btn.IsEnabled = true;
-                    }
-                }
+                CheckBoxPower.IsChecked = Setting.TurnOn;
+                if (!Setting.TurnOn) return;
                 try
                 {
                     Dispose();
-                    LabelClientInfo.Text = Setting.Number;
+                    LabelClientInfo.Text = !string.IsNullOrWhiteSpace(Setting.Name) ? $"{Setting.Name}({Setting.Number})" : Setting.Number;
                     LabelClientServer.Text = Setting.ServerIp;
                     _phoneProxy = new PhoneProxy(Setting.Number, Setting.Password, Setting.ServerIp, Setting.Port);
+                    _phoneProxy.PownOn = true;
                     _phoneProxy.RaiseMessage += _phoneProxy_RaiseMessage;
                     _phoneProxy.StateChanged += _phoneProxy_StateChanged;
                     _phoneProxy.StateMessageChanged += _phoneProxy_StateMessageChanged;
+                    _phoneProxy.Start();
                 }
                 catch (Exception ex)
                 {
@@ -161,6 +157,8 @@ namespace MySoftPhone
             InvokeGUIThread(() =>
             {
                 LabelStatus.Content = obj;
+                if (obj == "Online")
+                    Enable();
             });
         }
 
@@ -181,10 +179,39 @@ namespace MySoftPhone
                         LabelMessage.Background = new SolidColorBrush(Colors.White);
                         LabelNumber.Content = string.Empty;
                         break;
+                    case PhoneState.Available:
+                        break;
+                    case PhoneState.Unavailable:
+                        Disable();
+                        break;
                     default:
                         throw new ArgumentOutOfRangeException(nameof(obj), obj, null);
                 }
             });
+        }
+
+        void Disable()
+        {
+            LabelStatus.Content = "离线";
+            foreach (var child in GridButtons.Children)
+            {
+                if (child is Button btn)
+                {
+                    btn.IsEnabled = false;
+                }
+            }
+            btnSetting.IsEnabled = true;
+        }
+
+        void Enable()
+        {
+            foreach (var child in GridButtons.Children)
+            {
+                if (child is Button btn)
+                {
+                    btn.IsEnabled = true;
+                }
+            }
         }
 
         private void _phoneProxy_RaiseMessage(string obj)
@@ -211,6 +238,30 @@ namespace MySoftPhone
         public void Dispose()
         {
             _phoneProxy?.Stop();
+        }
+
+        private void ButtonBase_OnClick(object sender, RoutedEventArgs e)
+        {
+            if (Setting.TurnOn)
+            {
+                if (MessageBox.Show("确定要关闭该电话么？", "询问", MessageBoxButton.YesNo, MessageBoxImage.Question) ==
+                    MessageBoxResult.No)
+                {
+                    Setting.TurnOn = true;
+                    CheckBoxPower.IsChecked = true;
+                }
+                else
+                {
+                    Setting.TurnOn = false;
+                    _phoneProxy.PownOn = false;
+                    _phoneProxy.Stop();
+                }
+            }
+            else
+            {
+                Setting.TurnOn = true;
+                InitPhone();
+            }
         }
     }
 }

@@ -130,5 +130,10 @@ namespace MySoftPhone
             {
             }
         }
+
+        private void About_OnClick(object sender, RoutedEventArgs e)
+        {
+            new AboutWindow() { Owner = this }.ShowDialog();
+        }
     }
 }

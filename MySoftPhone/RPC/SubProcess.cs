@@ -55,8 +55,14 @@ namespace MySoftPhone.RPC
         public void Stop()
         {
             _anonymousPipeServer?.Stop();
-            if (!_subProcess.HasExited)
-                _subProcess.Kill();
+            try
+            {
+                if (!_subProcess.HasExited)
+                    _subProcess.Kill();
+            }
+            catch
+            {
+            }
         }
 
         public void SendMessage(string msg)

@@ -18,6 +18,7 @@
                     <MenuItem Click="Clear_OnClick" Header="清空"></MenuItem>
                     <MenuItem Click="Exit_OnClick" Header="退出"></MenuItem>
                 </MenuItem>
+                <MenuItem Header="关于" Click="About_OnClick"></MenuItem>
             </Menu.Items>
         </Menu>
         <ScrollViewer Grid.Row="1">

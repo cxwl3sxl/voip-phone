@@ -106,7 +106,7 @@ namespace MySoftPhone.RPC
                         var msg = pipeReader.ReadLine();
                         if (!string.IsNullOrWhiteSpace(msg))
                             MessageReceived?.BeginInvoke(msg, null, null);
-                        Thread.Sleep(500);
+                        Thread.Sleep(10);
                     }
                     catch (Exception exception)
                     {

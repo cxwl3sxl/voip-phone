@@ -1,7 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
+using System.Reflection;
 using System.Text;
+using System.Threading;
+using MySoftPhone.RPC;
 
 namespace MySoftPhone
 {
@@ -10,41 +14,114 @@ namespace MySoftPhone
         Ringing,
         InCall,
         CallEnded,
-        Other
+        Other,
+        Unavailable,
+        Available
     }
 
     public class PhoneProxy
     {
         public void Start()
         {
+            _subProcess?.Stop();
+            _subProcess = new SubProcess(new ProcessStartInfo(Assembly.GetEntryAssembly().Location,
+                $"{_number} {_pwd} {_ip} {_port}"));
+            _subProcess.MessageReceived += _subProcess_MessageReceived;
+            _subProcess.SubProcessExited += _subProcess_SubProcessExited;
+            _subProcess.Start();
+            StateChanged?.Invoke(PhoneState.Available);
+        }
+
+        public bool PownOn { get; set; }
+
+        private void _subProcess_SubProcessExited(SubProcess obj)
+        {
+            StateChanged?.Invoke(PhoneState.Unavailable);
+            if (PownOn)
+                Start();
+        }
+
+        private void _subProcess_MessageReceived(SubProcess arg1, string arg2)
+        {
+            var msgType = arg2.Substring(0, 3);
+            switch (msgType)
+            {
+                case "$E:":
+                    ProcessEvent(arg2.Substring(3));
+                    break;
+                case "$C:":
+                    ProcessCall(arg2.Substring(3));
+                    break;
+                case "$R:":
+                    ProcessReturn(arg2.Substring(3));
+                    break;
+            }
         }
 
         public void Stop()
         {
+            _subProcess?.Stop();
+            StateChanged?.Invoke(PhoneState.Unavailable);
         }
 
-        private readonly RealPhone _realPhone;
+        private readonly string _number;
+        private readonly string _pwd;
+        private readonly string _ip;
+        private readonly int _port;
+        private SubProcess _subProcess;
+        private readonly List<RemoteInvoke> _remoteInvokes = new List<RemoteInvoke>();
+        private readonly object _remoteCallLocker = new object();
+
         public PhoneProxy(string number, string password, string ip, int port)
         {
-            _realPhone = new RealPhone(number, password, ip, port);
-            _realPhone.RaiseMessage += _realPhone_RaiseMessage;
-            _realPhone.StateChanged += _realPhone_StateChanged;
-            _realPhone.StateMessageChanged += _realPhone_StateMessageChanged;
+            if (string.IsNullOrWhiteSpace(number)) throw new ArgumentNullException(nameof(number));
+            if (string.IsNullOrWhiteSpace(password)) throw new ArgumentNullException(nameof(password));
+            if (string.IsNullOrWhiteSpace(ip)) throw new ArgumentNullException(nameof(ip));
+            if (port <= 0) throw new ArgumentNullException(nameof(port));
+
+            _number = number;
+            _pwd = password;
+            _ip = ip;
+            _port = port;
         }
 
-        private void _realPhone_StateMessageChanged(string obj)
+        void ProcessCall(string callInfo)
         {
-            StateMessageChanged?.Invoke(obj);
+            throw new NotSupportedException();
         }
 
-        private void _realPhone_StateChanged(PhoneState obj)
+        void ProcessEvent(string eventInfo)
         {
-            StateChanged?.Invoke(obj);
+            if (string.IsNullOrWhiteSpace(eventInfo)) return;
+            var info = eventInfo.Split(new char[] { '#' }, StringSplitOptions.RemoveEmptyEntries);
+            switch (info[0])
+            {
+                case "RaiseMessage":
+                    RaiseMessage?.Invoke(info[1]);
+                    break;
+                case "StateMessageChanged":
+                    StateMessageChanged?.Invoke(info[1]);
+                    break;
+                case "StateChanged":
+                    StateChanged?.Invoke((PhoneState)Enum.Parse(typeof(PhoneState), info[1]));
+                    break;
+            }
         }
 
-        private void _realPhone_RaiseMessage(string obj)
+        void ProcessReturn(string returnInfo)
         {
-            RaiseMessage?.Invoke(obj);
+            var info = returnInfo.Split(new char[] { '#' }, StringSplitOptions.RemoveEmptyEntries);
+            var id = info[0];
+            var v = info[1];
+            RemoteInvoke remoteCall = null;
+            lock (_remoteCallLocker)
+            {
+                remoteCall = _remoteInvokes.FirstOrDefault(c => c.CallId == id);
+                if (remoteCall != null)
+                    _remoteInvokes.Remove(remoteCall);
+            }
+            remoteCall?.SetReasult(v);
+            remoteCall?.Dispose();
         }
 
         /// <summary>
@@ -53,7 +130,7 @@ namespace MySoftPhone
         /// <param name="signal"></param>
         public void SendSignal(int signal)
         {
-            _realPhone.SendSignal(signal);
+            CallRemote($"SendSignal#{signal}");
         }
 
         /// <summary>
@@ -61,7 +138,7 @@ namespace MySoftPhone
         /// </summary>
         public void StopSignal()
         {
-            _realPhone.StopSignal();
+            CallRemote($"StopSignal");
         }
 
         /// <summary>
@@ -70,7 +147,7 @@ namespace MySoftPhone
         /// <param name="number"></param>
         public void PickUp(string number)
         {
-            _realPhone.PickUp(number);
+            CallRemote($"PickUp#{number}");
         }
 
         /// <summary>
@@ -78,7 +155,7 @@ namespace MySoftPhone
         /// </summary>
         public void HangUp()
         {
-            _realPhone.HangUp();
+            CallRemote($"HangUp");
         }
 
         /// <summary>
@@ -96,7 +173,57 @@ namespace MySoftPhone
         /// </summary>
         public event Action<string> StateMessageChanged;
 
-        public bool HaveCall => _realPhone.HaveCall;
-        public bool IsInCall => _realPhone.IsInCall;
+        public bool HaveCall => CallAndWait<bool>("HaveCall", s => Convert.ToBoolean(s));
+
+        public bool IsInCall => CallAndWait<bool>("IsInCall", s => Convert.ToBoolean(s));
+
+        void CallRemote(string callInfo)
+        {
+            _subProcess.SendMessage($"$C:{Guid.NewGuid().ToString()}#{callInfo}");
+        }
+
+        T CallAndWait<T>(string callInfo, Func<string, object> convert)
+        {
+            var remoteCall = new RemoteInvoke(convert);
+            lock (_remoteCallLocker)
+            {
+                _remoteInvokes.Add(remoteCall);
+            }
+            _subProcess.SendMessage($"$C:{remoteCall.CallId}#{callInfo}");
+            if (!remoteCall.Wait())
+                throw new TimeoutException();
+            return (T)remoteCall.Reasult;
+        }
+    }
+
+    class RemoteInvoke : IDisposable
+    {
+        private readonly AutoResetEvent _autoResetEvent = new AutoResetEvent(false);
+        private readonly Func<string, object> _convert;
+        public RemoteInvoke(Func<string, object> convert)
+        {
+            CallId = Guid.NewGuid().ToString();
+            _convert = convert;
+        }
+
+        public string CallId { get; }
+
+        public void SetReasult(string reasult)
+        {
+            Reasult = _convert(reasult);
+            _autoResetEvent.Set();
+        }
+
+        public object Reasult { get; private set; }
+
+        public bool Wait()
+        {
+            return _autoResetEvent.WaitOne(5000);
+        }
+
+        public void Dispose()
+        {
+            _autoResetEvent.Dispose();
+        }
     }
 }

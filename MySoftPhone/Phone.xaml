@@ -6,6 +6,28 @@
              xmlns:local="clr-namespace:MySoftPhone"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="207" Margin="5" Loaded="Phone_OnLoaded">
+    <UserControl.Resources>
+        <Style TargetType="CheckBox">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate>
+                        <Image Source="Images/gnome_shutdown.png" Width="16"></Image>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsChecked" Value="True">
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate>
+                                <Image Source="Images/gnome_on.png"  Width="16"></Image>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </UserControl.Resources>
     <Border CornerRadius="5">
         <Border.BorderBrush>
             <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
@@ -43,6 +65,7 @@
                         <ColumnDefinition></ColumnDefinition>
                     </Grid.ColumnDefinitions>
                     <Image Grid.ColumnSpan="2" Source="Images/cross_script.png" Width="16" Height="16" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="-10" MouseLeftButtonDown="UIElement_OnMouseLeftButtonDown"></Image>
+                    <CheckBox HorizontalAlignment="Left" Click="ButtonBase_OnClick" VerticalAlignment="Top" Margin="-8" Name="CheckBoxPower"></CheckBox>
                     <Label Name="LabelStatus" Height="30">离线</Label>
                     <StackPanel Grid.Column="1" Margin="0 0 5 0">
                         <TextBlock HorizontalAlignment="Right" Name="LabelClientInfo" FontSize="10">-</TextBlock>
