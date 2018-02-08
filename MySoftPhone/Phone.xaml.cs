@@ -159,6 +159,11 @@ namespace MySoftPhone
                 LabelStatus.Content = obj;
                 if (obj == "Online")
                     Enable();
+                if (obj == "Error")
+                {
+                    CheckBoxPower.IsChecked = false;
+                    Setting.TurnOn = false;
+                }
             });
         }
 

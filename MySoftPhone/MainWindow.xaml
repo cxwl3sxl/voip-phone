@@ -4,14 +4,14 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:MySoftPhone"
-        mc:Ignorable="d"
-        Title="电话台" Height="600" Width="900" Loaded="MainWindow_OnLoaded" Closing="MainWindow_OnClosing" Background="#eee">
+        mc:Ignorable="d" WindowStartupLocation="CenterScreen"
+        Title="电话中心" Height="370" Width="890" Loaded="MainWindow_OnLoaded" Closing="MainWindow_OnClosing" Background="#eee">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"></RowDefinition>
             <RowDefinition></RowDefinition>
         </Grid.RowDefinitions>
-        <Menu>
+        <Menu Background="Transparent">
             <Menu.Items>
                 <MenuItem Header="电话">
                     <MenuItem Click="AddNew_OnClick" Header="增加"></MenuItem>
@@ -21,8 +21,12 @@
                 <MenuItem Header="关于" Click="About_OnClick"></MenuItem>
             </Menu.Items>
         </Menu>
-        <ScrollViewer Grid.Row="1">
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
             <WrapPanel Name="Phones">
+                <!--<local:Phone></local:Phone>
+                <local:Phone></local:Phone>
+                <local:Phone></local:Phone>
+                <local:Phone></local:Phone>-->
             </WrapPanel>
         </ScrollViewer>
     </Grid>

@@ -25,6 +25,7 @@ namespace MySoftPhone
         private const string PhoneSettingFile = "Phones.json";
 
         private List<PhoneSetting> _phones = null;
+
         public MainWindow()
         {
             InitializeComponent();
@@ -57,6 +58,32 @@ namespace MySoftPhone
                 p.OnRemove += P_OnRemove;
                 Phones.Children.Add(p);
             }
+            ReSizeWindow();
+        }
+
+        void ReSizeWindow()
+        {
+            if (_phones == null) return;
+            if (_phones.Count <= 0)
+            {
+                Width = 217 + 20;
+                Height = 370;
+            }
+            else if (_phones.Count <= 4)
+            {
+                Width = (217 * _phones.Count) + 20;
+                Height = 370;
+            }
+            else if (_phones.Count == 4)
+            {
+                Width = 890;
+                Height = 370;
+            }
+            else
+            {
+                Width = 905;
+                Height = 405;
+            }
         }
 
         private void P_OnRemove(Phone obj)
@@ -67,6 +94,7 @@ namespace MySoftPhone
                 obj.Dispose();
                 _phones.Remove(obj.Setting);
                 Phones.Children.Remove(obj);
+                ReSizeWindow();
             }
         }
 
@@ -85,6 +113,7 @@ namespace MySoftPhone
                 p.OnRemove += P_OnRemove;
                 Phones.Children.Add(p);
             }
+            ReSizeWindow();
         }
 
         private void Clear_OnClick(object sender, RoutedEventArgs e)
@@ -101,6 +130,7 @@ namespace MySoftPhone
                 }
                 _phones.Clear();
                 Phones.Children.Clear();
+                ReSizeWindow();
             }
         }
 
