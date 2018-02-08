@@ -163,6 +163,7 @@ namespace MySoftPhone
                 {
                     CheckBoxPower.IsChecked = false;
                     Setting.TurnOn = false;
+                    _phoneProxy?.Stop();
                 }
             });
         }
