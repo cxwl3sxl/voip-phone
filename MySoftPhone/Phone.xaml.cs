@@ -4,6 +4,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Animation;
 
 namespace MySoftPhone
 {
@@ -121,6 +122,7 @@ namespace MySoftPhone
                 try
                 {
                     Dispose();
+                    Starting();
                     LabelClientInfo.Text = !string.IsNullOrWhiteSpace(Setting.Name) ? $"{Setting.Name}({Setting.Number})" : Setting.Number;
                     LabelClientServer.Text = Setting.ServerIp;
                     _phoneProxy = new PhoneProxy(Setting.Number, Setting.Password, Setting.ServerIp, Setting.Port);
@@ -147,7 +149,7 @@ namespace MySoftPhone
                     sb.AppendLine("StackTrace:");
                     sb.AppendLine(ex.StackTrace);
 
-                    MessageBox.Show(String.Format("{0}", sb), "Ozeki WPF Softphone Sample", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show(String.Format("{0}", sb), "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
         }
@@ -158,12 +160,16 @@ namespace MySoftPhone
             {
                 LabelStatus.Content = obj;
                 if (obj == "Online")
+                {
                     Enable();
+                    Started();
+                }
                 if (obj == "Error")
                 {
                     CheckBoxPower.IsChecked = false;
                     Setting.TurnOn = false;
                     _phoneProxy?.Stop();
+                    Started();
                 }
             });
         }
@@ -218,6 +224,8 @@ namespace MySoftPhone
                     btn.IsEnabled = true;
                 }
             }
+            Setting.TurnOn = true;
+            CheckBoxPower.IsChecked = true;
         }
 
         private void _phoneProxy_RaiseMessage(string obj)
@@ -268,6 +276,22 @@ namespace MySoftPhone
                 Setting.TurnOn = true;
                 InitPhone();
             }
+        }
+
+        private void Starting()
+        {
+            ellipseStarting.Visibility = Visibility.Visible;
+            CheckBoxPower.Visibility = Visibility.Collapsed;
+            var beginStory = (Storyboard)FindResource("StoryboardStarting");
+            beginStory?.Begin(ellipseStarting, true);
+        }
+
+        private void Started()
+        {
+            var beginStory = (Storyboard)FindResource("StoryboardStarting");
+            beginStory?.Stop(ellipseStarting);
+            ellipseStarting.Visibility = Visibility.Collapsed;
+            CheckBoxPower.Visibility = Visibility.Visible;
         }
     }
 }

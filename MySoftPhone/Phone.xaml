@@ -27,6 +27,12 @@
                 </Trigger>
             </Style.Triggers>
         </Style>
+        <Storyboard x:Key="StoryboardStarting" AutoReverse="True" RepeatBehavior="Forever">
+            <ColorAnimationUsingKeyFrames Storyboard.TargetProperty="(Shape.Fill).(SolidColorBrush.Color)" Storyboard.TargetName="ellipseStarting">
+                <SplineColorKeyFrame KeyTime="0" Value="#FFF4F4F5"/>
+                <SplineColorKeyFrame KeyTime="0:0:1" Value="#FFEE730C"/>
+            </ColorAnimationUsingKeyFrames>
+        </Storyboard>
     </UserControl.Resources>
     <Border CornerRadius="5">
         <Border.BorderBrush>
@@ -64,6 +70,7 @@
                         <ColumnDefinition></ColumnDefinition>
                         <ColumnDefinition></ColumnDefinition>
                     </Grid.ColumnDefinitions>
+                    <Ellipse x:Name="ellipseStarting" Grid.ColumnSpan="2" Fill="#FFF4F4F5" Height="16" Stroke="#bbb" Width="16" VerticalAlignment="Top" Visibility="Collapsed" HorizontalAlignment="Left" Margin="-10"/>
                     <Image Grid.ColumnSpan="2" Source="Images/cross_script.png" Width="16" Height="16" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="-10" MouseLeftButtonDown="UIElement_OnMouseLeftButtonDown"></Image>
                     <CheckBox HorizontalAlignment="Left" Click="ButtonBase_OnClick" VerticalAlignment="Top" Margin="-8" Name="CheckBoxPower"></CheckBox>
                     <Label Name="LabelStatus" Height="30">离线</Label>
