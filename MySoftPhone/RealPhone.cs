@@ -23,7 +23,7 @@ namespace MySoftPhone
         public RealPhone(string number, string password, string ip, int port)
         {
             //http://geekwolke.com/2016/10/04/ozeki-voip-sip-sdk-license-code-free-download/
-            
+            Ozeki.VoIP.SDK.Protection.LicenseManager.Instance.SetLicense("I-Warez 2015", "UDoyMDMzLTEyLTI1LFVQOjIwMzMtMDEtMDEsTUNDOjMwLE1QTDozMCxNU0xDOjMwLE1GQzozMCxHNzI5OnRydWUsTVdQQzozMCxNSVBDOjMwfFg1dFBsTWRTNHNDeGFLa1Yyd3V5WHU5VGlOQkV4aG9KYit3WXdERDA3blRMWFh0WnYvOHRnQThLaGtoZ05XNVE5MjRUUjgwV1p4cVNFK0g2VGw2bHRRPT0=");
             softPhone = SoftPhoneFactory.CreateSoftPhone(15000, 15500);
             softPhone.IncomingCall += softPhone_IncomingCall;
             phoneLine = softPhone.CreatePhoneLine(new SIPAccount(true, number, number, number, password, ip, port));

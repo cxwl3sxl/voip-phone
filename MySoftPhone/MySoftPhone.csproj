@@ -68,6 +68,7 @@
     <Compile Include="AboutWindow.xaml.cs">
       <DependentUpon>AboutWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="AppSetting.cs" />
     <Compile Include="PhoneProxy.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="RealPhone.cs" />

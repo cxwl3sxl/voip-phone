@@ -24,7 +24,7 @@ namespace MySoftPhone
     {
         private const string PhoneSettingFile = "Phones.json";
 
-        private List<PhoneSetting> _phones = null;
+        private AppSetting _appSetting = null;
 
         public MainWindow()
         {
@@ -37,19 +37,19 @@ namespace MySoftPhone
             {
                 try
                 {
-                    _phones = JsonConvert.DeserializeObject<List<PhoneSetting>>(
+                    _appSetting = JsonConvert.DeserializeObject<AppSetting>(
                         File.ReadAllText(PhoneSettingFile));
                 }
                 catch
                 {
-                    _phones = new List<PhoneSetting>();
+                    _appSetting = new AppSetting();
                 }
             }
             else
             {
-                _phones = new List<PhoneSetting>();
+                _appSetting = new AppSetting();
             }
-            foreach (var phone in _phones)
+            foreach (var phone in _appSetting.Phones)
             {
                 var p = new Phone()
                 {
@@ -59,22 +59,32 @@ namespace MySoftPhone
                 Phones.Children.Add(p);
             }
             ReSizeWindow();
+            if (_appSetting.Size.Width > 0 && _appSetting.Size.Height > 0)
+            {
+                Width = _appSetting.Size.Width;
+                Height = _appSetting.Size.Height;
+            }
+            if (_appSetting.Location.X > 0 && _appSetting.Location.Y > 0)
+            {
+                Left = _appSetting.Location.X;
+                Top = _appSetting.Location.Y;
+            }
         }
 
         void ReSizeWindow()
         {
-            if (_phones == null) return;
-            if (_phones.Count <= 0)
+            if (_appSetting == null) return;
+            if (_appSetting.Phones.Count <= 0)
             {
                 Width = 217 + 20;
                 Height = 370;
             }
-            else if (_phones.Count <= 4)
+            else if (_appSetting.Phones.Count <= 4)
             {
-                Width = (217 * _phones.Count) + 20;
+                Width = (217 * _appSetting.Phones.Count) + 20;
                 Height = 370;
             }
-            else if (_phones.Count == 4)
+            else if (_appSetting.Phones.Count == 4)
             {
                 Width = 890;
                 Height = 370;
@@ -92,7 +102,7 @@ namespace MySoftPhone
                 MessageBoxResult.Yes)
             {
                 obj.Dispose();
-                _phones.Remove(obj.Setting);
+                _appSetting.Phones.Remove(obj.Setting);
                 Phones.Children.Remove(obj);
                 ReSizeWindow();
             }
@@ -109,7 +119,7 @@ namespace MySoftPhone
                 {
                     Setting = setting
                 };
-                _phones.Add(setting);
+                _appSetting.Phones.Add(setting);
                 p.OnRemove += P_OnRemove;
                 Phones.Children.Add(p);
             }
@@ -128,7 +138,7 @@ namespace MySoftPhone
                         p.Dispose();
                     }
                 }
-                _phones.Clear();
+                _appSetting.Phones.Clear();
                 Phones.Children.Clear();
                 ReSizeWindow();
             }
@@ -154,7 +164,9 @@ namespace MySoftPhone
         {
             try
             {
-                File.WriteAllText(PhoneSettingFile, JsonConvert.SerializeObject(_phones));
+                _appSetting.Location = new Point(Left, Top);
+                _appSetting.Size = new Size(Width, Height);
+                File.WriteAllText(PhoneSettingFile, JsonConvert.SerializeObject(_appSetting, Formatting.Indented));
             }
             catch
             {
