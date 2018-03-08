@@ -5,6 +5,8 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading;
+using System.Windows;
+using System.Windows.Threading;
 using MySoftPhone.RPC;
 
 namespace MySoftPhone
@@ -54,6 +56,12 @@ namespace MySoftPhone
                     break;
                 case "$R:":
                     ProcessReturn(arg2.Substring(3));
+                    break;
+                case "$I:":
+                    Dispatcher.CurrentDispatcher.Invoke(new Action<string>(msg =>
+                    {
+                        MessageBox.Show(msg, "温馨提示", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    }), arg2.Substring(3));
                     break;
             }
         }

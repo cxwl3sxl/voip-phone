@@ -18,15 +18,18 @@
                     <MenuItem Click="Clear_OnClick" Header="清空"></MenuItem>
                     <MenuItem Click="Exit_OnClick" Header="退出"></MenuItem>
                 </MenuItem>
-                <MenuItem Header="关于" Click="About_OnClick"></MenuItem>
+                <MenuItem Header="设置">
+                    <MenuItem Header="自动呼叫" Name="AutoCall" Click="AutoCall_OnClick"></MenuItem>
+                    <MenuItem Header="自动接听" Name="AutoHangup" Click="AutoHangup_OnClick"></MenuItem>
+                </MenuItem>
+                <MenuItem Header="关于">
+                    <MenuItem Header="关于" Click="About_OnClick"></MenuItem>
+                    <MenuItem Header="注册" Click="License_OnClick"></MenuItem>
+                </MenuItem>
             </Menu.Items>
         </Menu>
         <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
             <WrapPanel Name="Phones">
-                <!--<local:Phone></local:Phone>
-                <local:Phone></local:Phone>
-                <local:Phone></local:Phone>
-                <local:Phone></local:Phone>-->
             </WrapPanel>
         </ScrollViewer>
     </Grid>

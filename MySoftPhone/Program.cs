@@ -33,16 +33,23 @@ namespace MySoftPhone
                 _parentProcess.ParentProcessExit += ParentProcess_ParentProcessExit;
                 if (_parentProcess.InputArgs.Length != 4)
                     return;
-                _realPhone = new RealPhone(_parentProcess.InputArgs[0], _parentProcess.InputArgs[1],
-                    _parentProcess.InputArgs[2], Convert.ToInt32(_parentProcess.InputArgs[3]));
-                _realPhone.StateChanged += _realPhone_StateChanged;
-                _realPhone.StateMessageChanged += _realPhone_StateMessageChanged;
-                _realPhone.RaiseMessage += _realPhone_RaiseMessage;
+                try
+                {
+                    _realPhone = new RealPhone(_parentProcess.InputArgs[0], _parentProcess.InputArgs[1],
+                        _parentProcess.InputArgs[2], Convert.ToInt32(_parentProcess.InputArgs[3]));
+                    _realPhone.StateChanged += _realPhone_StateChanged;
+                    _realPhone.StateMessageChanged += _realPhone_StateMessageChanged;
+                    _realPhone.RaiseMessage += _realPhone_RaiseMessage;
+                }
+                catch (Exception ex)
+                {
+                    _parentProcess.SendMessage($"$I:{ex.Message}");
+                }
                 while (!_exit)
                 {
                     Thread.Sleep(500);
                 }
-                _realPhone.Dispose();
+                _realPhone?.Dispose();
             }
         }
 
@@ -62,7 +69,7 @@ namespace MySoftPhone
             _parentProcess.SendMessage($"$E:StateChanged#{obj}");
         }
 
-        private static RealPhone _realPhone;
+        private static RealPhone _realPhone = null;
         private static ParentProcess _parentProcess;
 
         private static void ParentProcess_ParentProcessExit()

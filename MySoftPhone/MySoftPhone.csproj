@@ -69,6 +69,16 @@
       <DependentUpon>AboutWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="AppSetting.cs" />
+    <Compile Include="Auto.cs" />
+    <Compile Include="AutoCallSetting.xaml.cs">
+      <DependentUpon>AutoCallSetting.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="AutoHangupSetting.xaml.cs">
+      <DependentUpon>AutoHangupSetting.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="LicenseWindow.xaml.cs">
+      <DependentUpon>LicenseWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="PhoneProxy.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="RealPhone.cs" />
@@ -80,6 +90,18 @@
       <DependentUpon>SettingWindow.xaml</DependentUpon>
     </Compile>
     <Page Include="AboutWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="AutoCallSetting.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="AutoHangupSetting.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="LicenseWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

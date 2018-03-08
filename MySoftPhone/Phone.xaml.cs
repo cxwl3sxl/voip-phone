@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -292,6 +294,100 @@ namespace MySoftPhone
             beginStory?.Stop(ellipseStarting);
             ellipseStarting.Visibility = Visibility.Collapsed;
             CheckBoxPower.Visibility = Visibility.Visible;
+        }
+
+        public void SetAutoOperator(AutoHangupSettingInfo setting)
+        {
+            GridButtons.IsEnabled = true;
+            if (setting == null) return;
+            GridButtons.IsEnabled = !setting.AutoHangup;
+            _autoHangupSetting = null;
+            StopAuto();
+            _autoHangupSetting = setting;
+            StartAuto();
+        }
+
+        private AutoCallSettingInfo _autoCallSetting;
+        private AutoHangupSettingInfo _autoHangupSetting;
+        private AutoResetEvent _autoResetEvent;
+        public void SetAutoOperator(AutoCallSettingInfo setting)
+        {
+            GridButtons.IsEnabled = true;
+            if (setting == null) return;
+            GridButtons.IsEnabled = !setting.AutoCall;
+            _autoCallSetting = null;
+            StopAuto();
+            _autoCallSetting = setting;
+            StartAuto();
+        }
+
+        void StopAuto()
+        {
+            _autoResetEvent?.Set();
+            _autoResetEvent?.WaitOne(500);
+            _autoResetEvent?.Dispose();
+        }
+
+        void StartAuto()
+        {
+            if (_autoCallSetting == null && _autoHangupSetting == null) return;
+            _autoResetEvent = new AutoResetEvent(false);
+            Task.Factory.StartNew(AutoOperator);
+        }
+
+        void AutoOperator()
+        {
+            while (true)
+            {
+                if (_autoCallSetting == null && _autoHangupSetting == null) break;
+                if (_autoCallSetting != null)
+                {
+                    if (string.IsNullOrWhiteSpace(_autoCallSetting.CallTo) || !_autoCallSetting.AutoCall) break;
+                    Dispatcher.Invoke(new Action(ProcessAutoCall));
+                }
+                if (_autoHangupSetting != null)
+                {
+                    if (!_autoHangupSetting.AutoHangup) break;
+                    Dispatcher.Invoke(new Action(ProcessAutoHangup));
+                }
+                _autoResetEvent.WaitOne(1000); //每个1秒钟检查一次
+            }
+        }
+
+        private DateTime _lastCallAt = DateTime.MinValue;
+
+        void ProcessAutoCall()
+        {
+            //自动呼叫
+            //_autoCallSetting
+            //正在呼叫中
+            if (LabelMessage.Content?.ToString() == "InCall")
+            {
+                _lastCallAt = DateTime.Now;
+                return;
+            }
+            //挂断之后的时间间隔不满足配置
+            if (!((DateTime.Now - _lastCallAt).TotalSeconds >= _autoCallSetting.CallDelyAfterHangup)) return;
+            //开始呼叫
+            _phoneProxy.PickUp(_autoCallSetting.CallTo);
+            //记录最后呼叫时间
+            _lastCallAt = DateTime.Now;
+        }
+
+        private DateTime _lastPickUp;
+        void ProcessAutoHangup()
+        {
+            //自动接听，没有响铃
+            if (LabelMessage.Content?.ToString() == "Ringing")
+            {
+                _phoneProxy.PickUp("");
+                _lastPickUp = DateTime.Now;
+            }
+            if (LabelMessage.Content?.ToString() == "InCall" &&
+                (DateTime.Now - _lastPickUp).TotalSeconds >= _autoHangupSetting.HangupAfter)
+            {
+                _phoneProxy.HangUp();
+            }
         }
     }
 }

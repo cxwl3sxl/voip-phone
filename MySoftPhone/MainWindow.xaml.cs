@@ -177,5 +177,56 @@ namespace MySoftPhone
         {
             new AboutWindow() { Owner = this }.ShowDialog();
         }
+
+        private void License_OnClick(object sender, RoutedEventArgs e)
+        {
+            new LicenseWindow() { Owner = this }.ShowDialog();
+        }
+
+        private AutoHangupSettingInfo[] _autoHangupSetting = null;
+        private void AutoHangup_OnClick(object sender, RoutedEventArgs e)
+        {
+            _autoCallSettingInfos = null;
+            AutoHangup.IsChecked = true;
+            AutoCall.IsChecked = false;
+            if (_autoHangupSetting == null || _autoHangupSetting.Length != _appSetting.Phones.Count)
+            {
+                _autoHangupSetting = new AutoHangupSettingInfo[_appSetting.Phones.Count];
+                for (var i = 0; i < _appSetting.Phones.Count; i++)
+                {
+                    _autoHangupSetting[i] = new AutoHangupSettingInfo(_appSetting.Phones[i].Number);
+                }
+            }
+            new AutoHangupSetting() { Settings = _autoHangupSetting }.ShowDialog();
+            foreach (var phone in Phones.Children)
+            {
+                if (!(phone is Phone p)) continue;
+                var newAutoOperator = _autoHangupSetting.FirstOrDefault(s => s.TelNumber == p.Setting?.Number);
+                p.SetAutoOperator(newAutoOperator);
+            }
+        }
+
+        private AutoCallSettingInfo[] _autoCallSettingInfos = null;
+        private void AutoCall_OnClick(object sender, RoutedEventArgs e)
+        {
+            _autoHangupSetting = null;
+            AutoHangup.IsChecked = false;
+            AutoCall.IsChecked = true;
+            if (_autoCallSettingInfos == null || _autoCallSettingInfos.Length != _appSetting.Phones.Count)
+            {
+                _autoCallSettingInfos = new AutoCallSettingInfo[_appSetting.Phones.Count];
+                for (var i = 0; i < _appSetting.Phones.Count; i++)
+                {
+                    _autoCallSettingInfos[i] = new AutoCallSettingInfo(_appSetting.Phones[i].Number);
+                }
+            }
+            new AutoCallSetting { Settings = _autoCallSettingInfos }.ShowDialog();
+            foreach (var phone in Phones.Children)
+            {
+                if (!(phone is Phone p)) continue;
+                var newAutoOperator = _autoCallSettingInfos.FirstOrDefault(s => s.TelNumber == p.Setting?.Number);
+                p.SetAutoOperator(newAutoOperator);
+            }
+        }
     }
 }
