@@ -14,7 +14,7 @@ using System.Windows.Shapes;
 namespace MySoftPhone
 {
     /// <summary>
-    /// AutoHangupSetting.xaml 的交互逻辑
+    /// AutoHangupSetting.xaml interaction logic
     /// </summary>
     public partial class AutoHangupSetting : Window
     {

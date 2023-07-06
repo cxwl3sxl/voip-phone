@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 namespace MySoftPhone.RPC
 {
     /// <summary>
-    /// 子进程拥有的父进程
+    /// parent process owned by the child process
     /// </summary>
     public class ParentProcess : IDisposable
     {
@@ -33,7 +33,7 @@ namespace MySoftPhone.RPC
             {
                 InputArgs = args;
             }
-            if (_anonymousPipeClient == null) throw new Exception("无法获取服务器连接信息");
+            if (_anonymousPipeClient == null) throw new Exception("Unable to get server connection information");
             _anonymousPipeClient.MessageReceived += _anonymousPipeClient_MessageReceived;
             _anonymousPipeClient.Start();
             Task.Factory.StartNew(DoCheckParentProcess);

@@ -38,16 +38,16 @@ namespace MySoftPhone.RPC
                 }
                 _otherArgs.Add(argString);
             }
-            if (string.IsNullOrWhiteSpace(pipeServerInfo)) throw new InvalidOperationException("输入参数中没有包含服务器信息的相关参数");
+            if (string.IsNullOrWhiteSpace(pipeServerInfo)) throw new InvalidOperationException("There are no relevant parameters containing server information in the input parameters");
             var info = pipeServerInfo.Split(new char[] { '-' }, StringSplitOptions.RemoveEmptyEntries);
-            if (info.Length != 2) throw new InvalidOperationException("服务器参数信息不正确");
+            if (info.Length != 2) throw new InvalidOperationException("\n Server parameter information is incorrect");
 
             _readPipeStream = new AnonymousPipeClientStream(PipeDirection.In, info[0]);
-            if (_readPipeStream == null) throw new Exception("参数无效，无法和主进程通信！");
+            if (_readPipeStream == null) throw new Exception("The parameter is invalid, unable to communicate with the main process!");
             _readPipeStream.ReadMode = PipeTransmissionMode.Byte;
 
             _writePipeStream = new AnonymousPipeClientStream(PipeDirection.Out, info[1]);
-            if (_writePipeStream == null) throw new Exception("参数无效，无法和主进程通信！");
+            if (_writePipeStream == null) throw new Exception("The parameter is invalid, unable to communicate with the main process!");
             _writePipeStream.ReadMode = PipeTransmissionMode.Byte;
         }
 

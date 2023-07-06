@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:MySoftPhone"
         mc:Ignorable="d"
-        Title="设置" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" Height="210" Width="300">
+        Title="set up" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" Height="210" Width="300">
     <Window.Resources>
         <Style TargetType="Label">
             <Setter Property="HorizontalContentAlignment" Value="Right"></Setter>
@@ -27,21 +27,21 @@
             <ColumnDefinition Width="80"></ColumnDefinition>
             <ColumnDefinition></ColumnDefinition>
         </Grid.ColumnDefinitions>
-        <Label  Grid.Row="0">电话名称：</Label>
+        <Label  Grid.Row="0">phone name：</Label>
         <TextBox  Grid.Row="0" Grid.Column="1" Text="{Binding Name}"></TextBox>
 
-        <Label  Grid.Row="1">电话号码：</Label>
+        <Label  Grid.Row="1">tel number：</Label>
         <TextBox  Grid.Row="1" Grid.Column="1" Text="{Binding Number}"></TextBox>
 
-        <Label Grid.Row="2">登录密码：</Label>
+        <Label Grid.Row="2">login pwd：</Label>
         <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding Password}"></TextBox>
 
-        <Label Grid.Row="3">服务器：</Label>
+        <Label Grid.Row="3">server：</Label>
         <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding ServerIp}"></TextBox>
 
-        <Label Grid.Row="4">端口：</Label>
+        <Label Grid.Row="4">port：</Label>
         <TextBox Grid.Row="4" Grid.Column="1" Text="{Binding Port}"></TextBox>
 
-        <Button Grid.Row="5" Grid.ColumnSpan="2" Margin="5" Padding="25 5" HorizontalAlignment="Center" VerticalAlignment="Center" Click="ButtonBase_OnClick">确定</Button>
+        <Button Grid.Row="5" Grid.ColumnSpan="2" Margin="5" Padding="25 5" HorizontalAlignment="Center" VerticalAlignment="Center" Click="ButtonBase_OnClick">Sure</Button>
     </Grid>
 </Window>

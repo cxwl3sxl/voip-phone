@@ -15,7 +15,7 @@ using System.Windows.Shapes;
 namespace MySoftPhone
 {
     /// <summary>
-    /// AboutWindow.xaml 的交互逻辑
+    /// AboutWindow.xaml interaction logic
     /// </summary>
     public partial class AboutWindow : Window
     {

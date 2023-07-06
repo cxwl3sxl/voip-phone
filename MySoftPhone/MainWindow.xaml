@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:MySoftPhone"
         mc:Ignorable="d" WindowStartupLocation="CenterScreen"
-        Title="电话中心" Height="370" Width="890" Loaded="MainWindow_OnLoaded" Closing="MainWindow_OnClosing" Background="#eee">
+        Title="call center" Height="370" Width="890" Loaded="MainWindow_OnLoaded" Closing="MainWindow_OnClosing" Background="#eee">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"></RowDefinition>
@@ -13,18 +13,18 @@
         </Grid.RowDefinitions>
         <Menu Background="Transparent">
             <Menu.Items>
-                <MenuItem Header="电话">
-                    <MenuItem Click="AddNew_OnClick" Header="增加"></MenuItem>
-                    <MenuItem Click="Clear_OnClick" Header="清空"></MenuItem>
-                    <MenuItem Click="Exit_OnClick" Header="退出"></MenuItem>
+                <MenuItem Header="Telephone">
+                    <MenuItem Click="AddNew_OnClick" Header="Increase"></MenuItem>
+                    <MenuItem Click="Clear_OnClick" Header="empty"></MenuItem>
+                    <MenuItem Click="Exit_OnClick" Header="quit"></MenuItem>
                 </MenuItem>
-                <MenuItem Header="设置">
-                    <MenuItem Header="自动呼叫" Name="AutoCall" Click="AutoCall_OnClick"></MenuItem>
-                    <MenuItem Header="自动接听" Name="AutoHangup" Click="AutoHangup_OnClick"></MenuItem>
+                <MenuItem Header="set up">
+                    <MenuItem Header="automatic call" Name="AutoCall" Click="AutoCall_OnClick"></MenuItem>
+                    <MenuItem Header="auto answer" Name="AutoHangup" Click="AutoHangup_OnClick"></MenuItem>
                 </MenuItem>
-                <MenuItem Header="关于">
-                    <MenuItem Header="关于" Click="About_OnClick"></MenuItem>
-                    <MenuItem Header="注册" Click="License_OnClick"></MenuItem>
+                <MenuItem Header="about">
+                    <MenuItem Header="about" Click="About_OnClick"></MenuItem>
+                    <MenuItem Header="register" Click="License_OnClick"></MenuItem>
                 </MenuItem>
             </Menu.Items>
         </Menu>

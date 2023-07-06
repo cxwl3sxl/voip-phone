@@ -3,7 +3,7 @@ using System.Diagnostics;
 
 namespace MySoftPhone.RPC
 {
-    //父进程创建的子进程
+    //Child process created by parent process
     public class SubProcess
     {
         private readonly ProcessStartInfo _processStartInfo;
