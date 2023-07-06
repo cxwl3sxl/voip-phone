@@ -18,7 +18,7 @@ using Newtonsoft.Json;
 namespace MySoftPhone
 {
     /// <summary>
-    /// MainWindow.xaml 的交互逻辑
+    /// MainWindow.xaml interaction logic
     /// </summary>
     public partial class MainWindow : Window
     {
@@ -98,7 +98,7 @@ namespace MySoftPhone
 
         private void P_OnRemove(Phone obj)
         {
-            if (MessageBox.Show("确定要移除选中的电话么？", "询问", MessageBoxButton.YesNo, MessageBoxImage.Question) ==
+            if (MessageBox.Show("Are you sure you want to remove the selected phone? ", "query", MessageBoxButton.YesNo, MessageBoxImage.Question) ==
                 MessageBoxResult.Yes)
             {
                 obj.Dispose();
@@ -128,7 +128,7 @@ namespace MySoftPhone
 
         private void Clear_OnClick(object sender, RoutedEventArgs e)
         {
-            if (MessageBox.Show("确定要移除所有电话么？", "询问", MessageBoxButton.YesNo, MessageBoxImage.Question) ==
+            if (MessageBox.Show("Are you sure you want to remove all calls? ", "query", MessageBoxButton.YesNo, MessageBoxImage.Question) ==
                 MessageBoxResult.Yes)
             {
                 foreach (var phone in Phones.Children)
@@ -146,7 +146,7 @@ namespace MySoftPhone
 
         private void Exit_OnClick(object sender, RoutedEventArgs e)
         {
-            if (MessageBox.Show("确定要退出么？", "询问", MessageBoxButton.YesNo, MessageBoxImage.Question) ==
+            if (MessageBox.Show("Are you sure you want to exit? ", "query", MessageBoxButton.YesNo, MessageBoxImage.Question) ==
                 MessageBoxResult.Yes)
             {
                 foreach (var phone in Phones.Children)

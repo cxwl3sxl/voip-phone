@@ -8,7 +8,7 @@ using System.Windows;
 namespace MySoftPhone
 {
     /// <summary>
-    /// App.xaml 的交互逻辑
+    /// App.xaml interaction logic
     /// </summary>
     public partial class App : Application
     {

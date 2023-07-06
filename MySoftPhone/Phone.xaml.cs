@@ -11,7 +11,7 @@ using System.Windows.Media.Animation;
 namespace MySoftPhone
 {
     /// <summary>
-    /// Phone.xaml 的交互逻辑
+    /// Phone.xaml interaction logic
     /// </summary>
     public partial class Phone : UserControl, IDisposable
     {
@@ -114,7 +114,7 @@ namespace MySoftPhone
         {
             if (Setting == null)
             {
-                MessageBox.Show("电话尚未初始化！");
+                MessageBox.Show("The phone has not been initialized!");
                 Disable();
             }
             else
@@ -206,7 +206,7 @@ namespace MySoftPhone
 
         void Disable()
         {
-            LabelStatus.Content = "离线";
+            LabelStatus.Content = "offline";
             foreach (var child in GridButtons.Children)
             {
                 if (child is Button btn)
@@ -260,7 +260,7 @@ namespace MySoftPhone
         {
             if (Setting.TurnOn)
             {
-                if (MessageBox.Show("确定要关闭该电话么？", "询问", MessageBoxButton.YesNo, MessageBoxImage.Question) ==
+                if (MessageBox.Show("Are you sure you want to close this phone? ", "query", MessageBoxButton.YesNo, MessageBoxImage.Question) ==
                     MessageBoxResult.No)
                 {
                     Setting.TurnOn = true;
@@ -350,7 +350,7 @@ namespace MySoftPhone
                     if (!_autoHangupSetting.AutoHangup) break;
                     Dispatcher.Invoke(new Action(ProcessAutoHangup));
                 }
-                _autoResetEvent.WaitOne(1000); //每个1秒钟检查一次
+                _autoResetEvent.WaitOne(1000); //Check every 1 second
             }
         }
 
@@ -358,26 +358,26 @@ namespace MySoftPhone
 
         void ProcessAutoCall()
         {
-            //自动呼叫
+            //automatic call
             //_autoCallSetting
-            //正在呼叫中
+            //is calling
             if (LabelMessage.Content?.ToString() == "InCall")
             {
                 _lastCallAt = DateTime.Now;
                 return;
             }
-            //挂断之后的时间间隔不满足配置
+            //The time interval after hanging up does not meet the configuration
             if (!((DateTime.Now - _lastCallAt).TotalSeconds >= _autoCallSetting.CallDelyAfterHangup)) return;
-            //开始呼叫
+            //start calling
             _phoneProxy.PickUp(_autoCallSetting.CallTo);
-            //记录最后呼叫时间
+            //Record last call time
             _lastCallAt = DateTime.Now;
         }
 
         private DateTime _lastPickUp;
         void ProcessAutoHangup()
         {
-            //自动接听，没有响铃
+            //Auto answer, no ring
             if (LabelMessage.Content?.ToString() == "Ringing")
             {
                 _phoneProxy.PickUp("");

@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:MySoftPhone"
         mc:Ignorable="d"
-        Title="自动呼叫设置" Height="300" Width="400" WindowStartupLocation="CenterOwner" Loaded="AutoCallSetting_OnLoaded">
+        Title="Auto Call Settings" Height="300" Width="400" WindowStartupLocation="CenterOwner" Loaded="AutoCallSetting_OnLoaded">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition></RowDefinition>
@@ -13,12 +13,12 @@
         </Grid.RowDefinitions>
         <DataGrid Name="DataGrid" AutoGenerateColumns="False">
             <DataGrid.Columns>
-                <DataGridTextColumn Header="本机号码" IsReadOnly="True" Binding="{Binding TelNumber}"></DataGridTextColumn>
-                <DataGridCheckBoxColumn Header="启用自动呼叫" Binding="{Binding AutoCall}"></DataGridCheckBoxColumn>
-                <DataGridTextColumn Header="呼叫目标号码" Binding="{Binding CallTo}"></DataGridTextColumn>
-                <DataGridTextColumn Header="挂断后在此发起间隔（秒）" Binding="{Binding CallDelyAfterHangup}"></DataGridTextColumn>
+                <DataGridTextColumn Header="local number" IsReadOnly="True" Binding="{Binding TelNumber}"></DataGridTextColumn>
+                <DataGridCheckBoxColumn Header="Enable automatic calling" Binding="{Binding AutoCall}"></DataGridCheckBoxColumn>
+                <DataGridTextColumn Header="call target number" Binding="{Binding CallTo}"></DataGridTextColumn>
+                <DataGridTextColumn Header="Initiate here interval after hangup (seconds)" Binding="{Binding CallDelyAfterHangup}"></DataGridTextColumn>
             </DataGrid.Columns>
         </DataGrid>
-        <Button Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center" Content="确定" Padding="20 5" Margin="5" Click="ButtonBase_OnClick"></Button>
+        <Button Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center" Content="Sure" Padding="20 5" Margin="5" Click="ButtonBase_OnClick"></Button>
     </Grid>
 </Window>

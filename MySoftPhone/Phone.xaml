@@ -75,20 +75,20 @@
                     <Ellipse x:Name="ellipseStarting" Grid.ColumnSpan="2" Fill="#FFFFFFFF" Height="16" Stroke="#555753" Width="16" VerticalAlignment="Top" Visibility="Collapsed" HorizontalAlignment="Left" Margin="-10"/>
                     <Image Grid.ColumnSpan="2" Source="Images/cross_script.png" Width="16" Height="16" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="-10" MouseLeftButtonDown="UIElement_OnMouseLeftButtonDown"></Image>
                     <CheckBox HorizontalAlignment="Left" Click="ButtonBase_OnClick" VerticalAlignment="Top" Margin="-8" Name="CheckBoxPower"></CheckBox>
-                    <Label Name="LabelStatus" Height="30">离线</Label>
+                    <Label Name="LabelStatus" Height="30">offline</Label>
                     <StackPanel Grid.Column="1" Margin="0 0 5 0">
                         <TextBlock HorizontalAlignment="Right" Name="LabelClientInfo" FontSize="10">-</TextBlock>
                         <TextBlock HorizontalAlignment="Right" Name="LabelClientServer" FontSize="10">-</TextBlock>
                     </StackPanel>
-                    <Label Name="LabelMessage" Height="30" HorizontalContentAlignment="Center"  Grid.Row="1" Grid.ColumnSpan="2">就绪</Label>
+                    <Label Name="LabelMessage" Height="30" HorizontalContentAlignment="Center"  Grid.Row="1" Grid.ColumnSpan="2">ready</Label>
                     <Label Name="LabelNumber" Height="30" HorizontalContentAlignment="Center" Grid.Row="2" Grid.ColumnSpan="2"></Label>
                 </Grid>
             </Border>
             <Border Grid.Row="1" Grid.ColumnSpan="2" x:Name="BorderNumpad" HorizontalAlignment="Center" VerticalAlignment="Bottom" Width="197" Height="191" Margin="5" >
                 <Grid Name="GridButtons">
-                    <Button x:Name="buttonPickUp" Content="接听/拨号" HorizontalAlignment="Left" Width="64" Height="35" Click="buttonPickUp_Click" VerticalAlignment="Top" FontSize="13.333" />
-                    <Button Name="btnSetting" Content="设置" Height="35" BorderThickness="0 5 5 0" Margin="67,0,67,0" VerticalAlignment="Top" Click="Setting_OnClick" Width="63" FontSize="14.667" />
-                    <Button x:Name="buttonHangUp" Content="挂断" HorizontalAlignment="Right" Width="63" Click="buttonHangUp_Click" Height="35" VerticalAlignment="Top" FontSize="13.333" />
+                    <Button x:Name="buttonPickUp" Content="answer/dial" HorizontalAlignment="Left" Width="64" Height="35" Click="buttonPickUp_Click" VerticalAlignment="Top" FontSize="13.333" />
+                    <Button Name="btnSetting" Content="set up" Height="35" BorderThickness="0 5 5 0" Margin="67,0,67,0" VerticalAlignment="Top" Click="Setting_OnClick" Width="63" FontSize="14.667" />
+                    <Button x:Name="buttonHangUp" Content="hang up" HorizontalAlignment="Right" Width="63" Click="buttonHangUp_Click" Height="35" VerticalAlignment="Top" FontSize="13.333" />
                     <Button Content="1" HorizontalAlignment="Left" Height="35" Margin="0,39,0,0" VerticalAlignment="Top" Width="63" Tag="1" Click="buttonKeyPadButton_Click" PreviewMouseDown="buttonKeyPad_MouseDown" PreviewMouseUp="buttonKeyPad_MouseUp" FontSize="14.667" />
                     <Button Content="2" Height="35" Margin="67,39,67,0" VerticalAlignment="Top" Tag="2" Click="buttonKeyPadButton_Click" PreviewMouseDown="buttonKeyPad_MouseDown" PreviewMouseUp="buttonKeyPad_MouseUp" Width="63" FontSize="14.667" />
                     <Button Content="3" HorizontalAlignment="Right" Height="35" Margin="0,39,0,0" VerticalAlignment="Top" Width="63" Tag="3" Click="buttonKeyPadButton_Click" PreviewMouseDown="buttonKeyPad_MouseDown" PreviewMouseUp="buttonKeyPad_MouseUp"  FontSize="14.667" />

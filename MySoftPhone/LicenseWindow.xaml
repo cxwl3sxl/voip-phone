@@ -27,17 +27,17 @@
             <ColumnDefinition></ColumnDefinition>
         </Grid.ColumnDefinitions>
         <TextBlock xml:space="preserve" Grid.ColumnSpan="2" TextWrapping="Wrap" Margin="5 0 5 0">
-说明：
-本软件本身不需要任何授权，但其使用的Ozeki.VoIP.SDK是需要授权的，因此在本页面录入的授权信息实际为Ozeki.VoIP.SDK的注册信息！
-本软件目前使用的Ozeki.VoIP.SDK版本为11.2.4.290
+illustrate:
+The software itself does not require any authorization, but the Ozeki.VoIP.SDK it uses requires authorization, so the authorization information entered on this page is actually the registration information of Ozeki.VoIP.SDK!
+The Ozeki.VoIP.SDK version currently used by this software is 11.2.4.290
         </TextBlock>
 
-        <Label Grid.Row="1">用户：</Label>
+        <Label Grid.Row="1">user：</Label>
         <TextBox Grid.Row="1" Name="TextBoxUserName" Grid.Column="2"></TextBox>
 
-        <Label Grid.Row="2">授权码：</Label>
+        <Label Grid.Row="2">Authorization code：</Label>
         <TextBox Grid.Row="2" Name="TextBoxLicense" TextWrapping="Wrap" Grid.Column="2"></TextBox>
 
-        <Button Grid.Row="3" Grid.ColumnSpan="2" Click="Regist_OnClick" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="20 5" >注册</Button>
+        <Button Grid.Row="3" Grid.ColumnSpan="2" Click="Regist_OnClick" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="20 5" >register</Button>
     </Grid>
 </Window>

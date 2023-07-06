@@ -7,7 +7,7 @@ using System.Windows;
 namespace MySoftPhone
 {
     /// <summary>
-    /// 自动接听设置
+    /// Auto Answer Settings
     /// </summary>
     public class AutoHangupSettingInfo
     {
@@ -16,23 +16,23 @@ namespace MySoftPhone
             TelNumber = tel;
         }
         /// <summary>
-        /// 电话号码
+        /// telephone number
         /// </summary>
         public string TelNumber { get; }
 
         /// <summary>
-        /// 是否自动接听
+        /// Whether to answer automatically
         /// </summary>
         public bool AutoHangup { get; set; }
 
         /// <summary>
-        /// 接听之后多少秒自动挂断
+        /// How many seconds to automatically hang up after answering
         /// </summary>
         public int HangupAfter { get; set; }
     }
 
     /// <summary>
-    /// 自动呼叫设置
+    /// Auto Call Settings
     /// </summary>
     public class AutoCallSettingInfo
     {
@@ -42,22 +42,22 @@ namespace MySoftPhone
         }
 
         /// <summary>
-        /// 电话号码
+        /// telephone number
         /// </summary>
         public string TelNumber { get; }
 
         /// <summary>
-        /// 是否自动呼叫
+        /// Whether to call automatically
         /// </summary>
         public bool AutoCall { get; set; }
 
         /// <summary>
-        /// 呼叫的目标号码
+        /// Destination number to call
         /// </summary>
         public string CallTo { get; set; }
 
         /// <summary>
-        /// 挂断后多少秒自动发起呼叫
+        /// How many seconds to automatically initiate a call after hanging up
         /// </summary>
         public int CallDelyAfterHangup { get; set; }
     }

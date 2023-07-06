@@ -63,7 +63,7 @@ namespace MySoftPhone
         }
 
         /// <summary>
-        /// 发送按键信号
+        /// Send button signal
         /// </summary>
         /// <param name="signal"></param>
         public void SendSignal(int signal)
@@ -82,7 +82,7 @@ namespace MySoftPhone
         }
 
         /// <summary>
-        /// 停止发送信号
+        /// stop signaling
         /// </summary>
         public void StopSignal()
         {
@@ -96,7 +96,7 @@ namespace MySoftPhone
         }
 
         /// <summary>
-        /// 拨号或者接听
+        /// dial or answer
         /// </summary>
         /// <param name="number"></param>
         public void PickUp(string number)
@@ -208,7 +208,7 @@ namespace MySoftPhone
         }
 
         /// <summary>
-        /// 挂断
+        /// hang up
         /// </summary>
         public void HangUp()
         {
@@ -234,17 +234,17 @@ namespace MySoftPhone
         }
 
         /// <summary>
-        /// 电话状态发生变化
+        /// Phone status changes
         /// </summary>
         public event Action<PhoneState> StateChanged;
 
         /// <summary>
-        /// 推送消息
+        /// forward news
         /// </summary>
         public event Action<string> RaiseMessage;
 
         /// <summary>
-        /// 状态发生变化的消息
+        /// status change message
         /// </summary>
         public event Action<string> StateMessageChanged;
 

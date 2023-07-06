@@ -15,7 +15,7 @@ using System.Windows.Shapes;
 namespace MySoftPhone
 {
     /// <summary>
-    /// LicenseWindow.xaml 的交互逻辑
+    /// LicenseWindow.xaml interaction logic
     /// </summary>
     public partial class LicenseWindow : Window
     {
@@ -38,7 +38,7 @@ namespace MySoftPhone
             }
             catch (Exception exception)
             {
-                MessageBox.Show("保存失败！\n" + exception.Message);
+                MessageBox.Show("save failed！\n" + exception.Message);
             }
         }
 
