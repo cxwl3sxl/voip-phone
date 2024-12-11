@@ -87,7 +87,7 @@
             <Border Grid.Row="1" Grid.ColumnSpan="2" x:Name="BorderNumpad" HorizontalAlignment="Center" VerticalAlignment="Bottom" Width="197" Height="191" Margin="5" >
                 <Grid Name="GridButtons">
                     <Button x:Name="buttonPickUp" Content="接听/拨号" HorizontalAlignment="Left" Width="64" Height="35" Click="buttonPickUp_Click" VerticalAlignment="Top" FontSize="13.333" />
-                    <Button Name="btnSetting" Content="设置" Height="35" BorderThickness="0 5 5 0" Margin="67,0,67,0" VerticalAlignment="Top" Click="Setting_OnClick" Width="63" FontSize="14.667" />
+                    <Button Name="btnSetting" Content="设置" Height="35" Margin="67,0,67,0" VerticalAlignment="Top" Click="Setting_OnClick" Width="63" FontSize="14.667" />
                     <Button x:Name="buttonHangUp" Content="挂断" HorizontalAlignment="Right" Width="63" Click="buttonHangUp_Click" Height="35" VerticalAlignment="Top" FontSize="13.333" />
                     <Button Content="1" HorizontalAlignment="Left" Height="35" Margin="0,39,0,0" VerticalAlignment="Top" Width="63" Tag="1" Click="buttonKeyPadButton_Click" PreviewMouseDown="buttonKeyPad_MouseDown" PreviewMouseUp="buttonKeyPad_MouseUp" FontSize="14.667" />
                     <Button Content="2" Height="35" Margin="67,39,67,0" VerticalAlignment="Top" Tag="2" Click="buttonKeyPadButton_Click" PreviewMouseDown="buttonKeyPad_MouseDown" PreviewMouseUp="buttonKeyPad_MouseUp" Width="63" FontSize="14.667" />

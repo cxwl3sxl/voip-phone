@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -27,7 +28,10 @@ namespace MySoftPhone
             }
             else
             {
-                //Debugger.Launch();
+                if (File.Exists("debug.txt"))
+                {
+                    Debugger.Launch();
+                }
                 _parentProcess = new ParentProcess(args);
                 _parentProcess.MessageReceived += ParentProcess_MessageReceived;
                 _parentProcess.ParentProcessExit += ParentProcess_ParentProcessExit;

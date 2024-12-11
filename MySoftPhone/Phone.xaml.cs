@@ -166,11 +166,17 @@ namespace MySoftPhone
                     Enable();
                     Started();
                 }
-                if (obj == "Error")
+                else
                 {
+                    LabelMessage.Content = obj;
                     CheckBoxPower.IsChecked = false;
                     Setting.TurnOn = false;
-                    _phoneProxy?.Stop();
+                    if (_phoneProxy != null)
+                    {
+                        _phoneProxy.PownOn = false;
+                        _phoneProxy.Stop();
+                    }
+                    
                     Started();
                 }
             });
@@ -275,6 +281,7 @@ namespace MySoftPhone
             }
             else
             {
+                _phoneProxy?.Stop();
                 Setting.TurnOn = true;
                 InitPhone();
             }
