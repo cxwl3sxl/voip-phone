@@ -21,7 +21,7 @@ namespace MySoftPhone
         public SettingWindow(PhoneSetting setting)
         {
             InitializeComponent();
-            this.DataContext = setting;
+            DataContext = setting;
         }
 
         private void ButtonBase_OnClick(object sender, RoutedEventArgs e)

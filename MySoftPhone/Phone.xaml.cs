@@ -125,10 +125,20 @@ namespace MySoftPhone
                 {
                     Dispose();
                     Starting();
-                    LabelClientInfo.Text = !string.IsNullOrWhiteSpace(Setting.Name) ? $"{Setting.Name}({Setting.Number})" : Setting.Number;
+                    LabelClientInfo.Text = !string.IsNullOrWhiteSpace(Setting.Name)
+                        ? $"{Setting.Name}({Setting.Number})"
+                        : Setting.Number;
                     LabelClientServer.Text = Setting.ServerIp;
-                    _phoneProxy = new PhoneProxy(Setting.Number, Setting.Password, Setting.ServerIp, Setting.Port);
-                    _phoneProxy.PownOn = true;
+                    _phoneProxy = new PhoneProxy(
+                        Setting.Name,
+                        Setting.LocalIp,
+                        Setting.Number,
+                        Setting.Password,
+                        Setting.ServerIp,
+                        Setting.Port)
+                    {
+                        PownOn = true
+                    };
                     _phoneProxy.RaiseMessage += _phoneProxy_RaiseMessage;
                     _phoneProxy.StateChanged += _phoneProxy_StateChanged;
                     _phoneProxy.StateMessageChanged += _phoneProxy_StateMessageChanged;
@@ -148,6 +158,7 @@ namespace MySoftPhone
                         sb.AppendLine(ex.InnerException.Message);
                         sb.AppendLine();
                     }
+
                     sb.AppendLine("StackTrace:");
                     sb.AppendLine(ex.StackTrace);
 
@@ -163,6 +174,7 @@ namespace MySoftPhone
                 LabelStatus.Content = obj;
                 if (obj == "Online")
                 {
+                    LabelMessage.Content = "就绪";
                     Enable();
                     Started();
                 }

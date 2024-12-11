@@ -22,7 +22,7 @@ namespace MySoftPhone
         PhoneCallAudioReceiver mediaReceiver = new PhoneCallAudioReceiver();
         int currentDtmfSignal;
 
-        public RealPhone(string number, string password, string ip, int port)
+        public RealPhone(string localIp, string number, string password, string ip, int port)
         {
             if (File.Exists("license.txt"))
             {
@@ -33,7 +33,7 @@ namespace MySoftPhone
                 Ozeki.VoIP.SDK.Protection.LicenseManager.Instance.SetLicense(uid, pwd);
             }
 
-            softPhone = SoftPhoneFactory.CreateSoftPhone(IPAddress.Parse("192.168.0.84"), 15000, 15500);
+            softPhone = SoftPhoneFactory.CreateSoftPhone(IPAddress.Parse(localIp), 15000, 15500);
             softPhone.IncomingCall += softPhone_IncomingCall;
             phoneLine = softPhone.CreatePhoneLine(new SIPAccount(true, number, number, number, password, ip, port));
             phoneLine.RegistrationStateChanged += phoneLine_PhoneLineStateChanged;

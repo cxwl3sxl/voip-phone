@@ -7,16 +7,18 @@ namespace MySoftPhone.RPC
     public class SubProcess
     {
         private readonly ProcessStartInfo _processStartInfo;
+        private readonly string _name;
         private bool _isSubProcessExit;
         private Process _subProcess;
         private readonly string _inputArgs;
 
         private AnonymousPipeServer _anonymousPipeServer;
 
-        public SubProcess(ProcessStartInfo processStartInfo)
+        public SubProcess(ProcessStartInfo processStartInfo, string name)
         {
             _inputArgs = processStartInfo.Arguments;
             _processStartInfo = processStartInfo;
+            _name = name;
             _processStartInfo.UseShellExecute = false;
         }
 
@@ -36,6 +38,7 @@ namespace MySoftPhone.RPC
             };
             _subProcess.Exited += SubProcess_Exited;
             _subProcess.Start();
+            Trace.Write($"[MyPhone] {_name}的子进程已启动：{_subProcess.Id}");
             _isSubProcessExit = false;
             _anonymousPipeServer.AfterSubProcessStart();
             _anonymousPipeServer.Start();
@@ -54,6 +57,7 @@ namespace MySoftPhone.RPC
 
         public void Stop()
         {
+            Trace.Write($"[MyPhone] 正在终止{_name}的子进程：{_subProcess.Id}");
             _anonymousPipeServer?.Stop();
             try
             {

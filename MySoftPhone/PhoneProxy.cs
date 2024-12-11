@@ -27,7 +27,7 @@ namespace MySoftPhone
         {
             _subProcess?.Stop();
             _subProcess = new SubProcess(new ProcessStartInfo(Assembly.GetEntryAssembly().Location,
-                $"{_number} {_pwd} {_ip} {_port}"));
+                $"{_localIp} {_number} {_pwd} {_ip} {_port}"), _name);
             _subProcess.MessageReceived += _subProcess_MessageReceived;
             _subProcess.SubProcessExited += _subProcess_SubProcessExited;
             _subProcess.Start();
@@ -72,6 +72,8 @@ namespace MySoftPhone
             StateChanged?.Invoke(PhoneState.Unavailable);
         }
 
+        private readonly string _name;
+        private readonly string _localIp;
         private readonly string _number;
         private readonly string _pwd;
         private readonly string _ip;
@@ -80,13 +82,15 @@ namespace MySoftPhone
         private readonly List<RemoteInvoke> _remoteInvokes = new List<RemoteInvoke>();
         private readonly object _remoteCallLocker = new object();
 
-        public PhoneProxy(string number, string password, string ip, int port)
+        public PhoneProxy(string name, string localIp, string number, string password, string ip, int port)
         {
             if (string.IsNullOrWhiteSpace(number)) throw new ArgumentNullException(nameof(number));
             if (string.IsNullOrWhiteSpace(password)) throw new ArgumentNullException(nameof(password));
             if (string.IsNullOrWhiteSpace(ip)) throw new ArgumentNullException(nameof(ip));
             if (port <= 0) throw new ArgumentNullException(nameof(port));
 
+            _name = name;
+            _localIp = localIp;
             _number = number;
             _pwd = password;
             _ip = ip;
