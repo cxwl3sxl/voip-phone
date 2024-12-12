@@ -1,12 +1,10 @@
 ﻿using Ozeki.VoIP;
 using Ozeki.VoIP.SDK;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net;
-using System.Text;
 using Ozeki.Media.MediaHandlers;
+using Ozeki.Network.Nat;
 
 namespace MySoftPhone
 {
@@ -37,7 +35,15 @@ namespace MySoftPhone
 
             softPhone = SoftPhoneFactory.CreateSoftPhone(IPAddress.Parse(localIp), 15000, 15500);
             softPhone.IncomingCall += softPhone_IncomingCall;
-            phoneLine = softPhone.CreatePhoneLine(new SIPAccount(true, number, number, number, password, ip, port));
+
+            var lineConfig =
+                new PhoneLineConfiguration(new SIPAccount(true, number, number, number, password, ip, port))
+                {
+                    NatConfig = new NatConfiguration(NatTraversalMethod.None),
+                    LocalAddress = localIp,
+                    
+                };
+            phoneLine = softPhone.CreatePhoneLine(lineConfig);
             phoneLine.RegistrationStateChanged += phoneLine_PhoneLineStateChanged;
 
             softPhone.RegisterPhoneLine(phoneLine);
@@ -51,24 +57,37 @@ namespace MySoftPhone
             StateMessageChanged?.Invoke(e.State == RegState.RegistrationSucceeded
                 ? "Online"
                 : $"{e.State} {e.ReasonPhrase}");
+
+            if (e.State == RegState.RegistrationSucceeded)
+            {
+                _logger.Information($"线路已注册 {phoneLine.Config.LocalAddress} {phoneLine.Config.LocalPort}");
+            }
         }
 
         private void softPhone_IncomingCall(object sender, VoIPEventArgs<IPhoneCall> e)
         {
-            _logger.Information($"收到呼入请求，来电号码：{e.Item.DialInfo.CallerDisplay}");
-            var incomingCall = e.Item as IPhoneCall;
-            if (call != null)
+            try
             {
-                incomingCall.Reject();
-                _logger.Information($"当前正忙，直接拒接");
-                return;
+                _logger.Information(
+                    $"收到呼入请求，来电号码：{e.Item.DialInfo.CallerDisplay}");
+                var incomingCall = e.Item as IPhoneCall;
+                if (call != null)
+                {
+                    incomingCall.Reject();
+                    _logger.Information($"当前正忙，直接拒接");
+                    return;
+                }
+
+                call = incomingCall;
+                SubscribeToCallEvents(call);
+
+                StateChanged?.Invoke(PhoneState.InCall);
+                RaiseMessage?.Invoke(String.Format("Incoming call from {0}", e.Item.DialInfo.CallerDisplay));
             }
-
-            call = incomingCall;
-            SubscribeToCallEvents(call);
-
-            StateChanged?.Invoke(PhoneState.InCall);
-            RaiseMessage?.Invoke(String.Format("Incoming call from {0}", e.Item.DialInfo.CallerDisplay));
+            catch (Exception ex)
+            {
+                _logger.Error("处理来电出错", ex);
+            }
         }
 
         /// <summary>
@@ -146,6 +165,29 @@ namespace MySoftPhone
 
             call.CallStateChanged += (call_CallStateChanged);
             call.DtmfReceived += (call_DtmfReceived);
+            call.TransferStateChanged += Call_TransferStateChanged;
+            call.InstantMessageReceived += Call_InstantMessageReceived;
+        }
+
+        private void UnsubscribeFromCallEvents(IPhoneCall call)
+        {
+            if (call == null)
+                return;
+
+            call.CallStateChanged -= (call_CallStateChanged);
+            call.DtmfReceived -= (call_DtmfReceived);
+            call.TransferStateChanged -= Call_TransferStateChanged;
+            call.InstantMessageReceived -= Call_InstantMessageReceived;
+        }
+
+        private void Call_InstantMessageReceived(object sender, Ozeki.VoIP.SIP.InstantMessage e)
+        {
+            _logger.Information($"收到消息 {e.Content}");
+        }
+
+        private void Call_TransferStateChanged(object sender, VoIPEventArgs<TransferState> e)
+        {
+            _logger.Information($"通话传输状态变更 {e.Item}");
         }
 
         private void call_CallStateChanged(object sender, CallStateChangedArgs e)
@@ -202,15 +244,6 @@ namespace MySoftPhone
 
             if (microphone != null)
                 connector.Connect(microphone, mediaSender);
-        }
-
-        private void UnsubscribeFromCallEvents(IPhoneCall call)
-        {
-            if (call == null)
-                return;
-
-            call.CallStateChanged -= (call_CallStateChanged);
-            call.DtmfReceived -= (call_DtmfReceived);
         }
 
         private void call_DtmfReceived(object sender, VoIPEventArgs<DtmfInfo> e)
