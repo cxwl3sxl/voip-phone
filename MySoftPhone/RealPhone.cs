@@ -21,9 +21,11 @@ namespace MySoftPhone
         PhoneCallAudioSender mediaSender = new PhoneCallAudioSender();
         PhoneCallAudioReceiver mediaReceiver = new PhoneCallAudioReceiver();
         int currentDtmfSignal;
+        private readonly Logger _logger;
 
         public RealPhone(string localIp, string number, string password, string ip, int port)
         {
+            _logger = new Logger($"MyPhone-{number}");
             if (File.Exists("license.txt"))
             {
                 string[] licenseInfo = File.ReadAllLines("license.txt");
@@ -45,6 +47,7 @@ namespace MySoftPhone
 
         private void phoneLine_PhoneLineStateChanged(object sender, RegistrationStateChangedArgs e)
         {
+            _logger.Information($"线路状态变更事件 {e.State} {e.ReasonPhrase}");
             StateMessageChanged?.Invoke(e.State == RegState.RegistrationSucceeded
                 ? "Online"
                 : $"{e.State} {e.ReasonPhrase}");
@@ -52,10 +55,12 @@ namespace MySoftPhone
 
         private void softPhone_IncomingCall(object sender, VoIPEventArgs<IPhoneCall> e)
         {
+            _logger.Information($"收到呼入请求，来电号码：{e.Item.DialInfo.CallerDisplay}");
             var incomingCall = e.Item as IPhoneCall;
             if (call != null)
             {
                 incomingCall.Reject();
+                _logger.Information($"当前正忙，直接拒接");
                 return;
             }
 
@@ -108,6 +113,7 @@ namespace MySoftPhone
             // accept incoming call
             if (call != null && call.IsIncoming)
             {
+                _logger.Information($"正在接起来电：{call.DialInfo.CallerDisplay}");
                 RaiseMessage?.Invoke("Talking");
                 call.Answer();
                 return;
@@ -126,6 +132,7 @@ namespace MySoftPhone
                 return;
             }
 
+            _logger.Information($"正在呼叫：{number}");
             call = softPhone.CreateCallObject(phoneLine, number);
             SubscribeToCallEvents(call);
             call.Start();
@@ -143,6 +150,7 @@ namespace MySoftPhone
 
         private void call_CallStateChanged(object sender, CallStateChangedArgs e)
         {
+            _logger.Information($"呼叫状态变更事件：{e.State} {e.Reason}");
             switch (e.State)
             {
                 case CallState.Ringing:

@@ -103,18 +103,25 @@ namespace MySoftPhone
 
         private static void ParentProcess_MessageReceived(string obj)
         {
-            var msgType = obj.Substring(0, 3);
-            switch (msgType)
+            try
             {
-                case "$E:":
-                    ProcessEvent(obj.Substring(3));
-                    break;
-                case "$C:":
-                    ProcessCall(obj.Substring(3));
-                    break;
-                case "$R:":
-                    ProcessReturn(obj.Substring(3));
-                    break;
+                var msgType = obj.Substring(0, 3);
+                switch (msgType)
+                {
+                    case "$E:":
+                        ProcessEvent(obj.Substring(3));
+                        break;
+                    case "$C:":
+                        ProcessCall(obj.Substring(3));
+                        break;
+                    case "$R:":
+                        ProcessReturn(obj.Substring(3));
+                        break;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.Error("执行父进程消息出错", ex);
             }
         }
 

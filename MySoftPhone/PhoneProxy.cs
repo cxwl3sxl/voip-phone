@@ -45,24 +45,33 @@ namespace MySoftPhone
 
         private void _subProcess_MessageReceived(SubProcess arg1, string arg2)
         {
+            _logger.Information($"收到子进程消息 {arg2}...");
             var msgType = arg2.Substring(0, 3);
-            switch (msgType)
+            try
             {
-                case "$E:":
-                    ProcessEvent(arg2.Substring(3));
-                    break;
-                case "$C:":
-                    ProcessCall(arg2.Substring(3));
-                    break;
-                case "$R:":
-                    ProcessReturn(arg2.Substring(3));
-                    break;
-                case "$I:":
-                    Dispatcher.CurrentDispatcher.Invoke(new Action<string>(msg =>
-                    {
-                        MessageBox.Show(msg, "温馨提示", MessageBoxButton.OK, MessageBoxImage.Warning);
-                    }), arg2.Substring(3));
-                    break;
+                switch (msgType)
+                {
+                    case "$E:":
+                        ProcessEvent(arg2.Substring(3));
+                        break;
+                    case "$C:":
+                        ProcessCall(arg2.Substring(3));
+                        break;
+                    case "$R:":
+                        ProcessReturn(arg2.Substring(3));
+                        break;
+                    case "$I:":
+                        Dispatcher.CurrentDispatcher.Invoke(
+                            new Action<string>(msg =>
+                            {
+                                MessageBox.Show(msg, "温馨提示", MessageBoxButton.OK, MessageBoxImage.Warning);
+                            }), arg2.Substring(3));
+                        break;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.Error("处理子进程消息出错", ex);
             }
         }
 
@@ -81,6 +90,7 @@ namespace MySoftPhone
         private SubProcess _subProcess;
         private readonly List<RemoteInvoke> _remoteInvokes = new List<RemoteInvoke>();
         private readonly object _remoteCallLocker = new object();
+        private readonly Logger _logger;
 
         public PhoneProxy(string name, string localIp, string number, string password, string ip, int port)
         {
@@ -88,6 +98,8 @@ namespace MySoftPhone
             if (string.IsNullOrWhiteSpace(password)) throw new ArgumentNullException(nameof(password));
             if (string.IsNullOrWhiteSpace(ip)) throw new ArgumentNullException(nameof(ip));
             if (port <= 0) throw new ArgumentNullException(nameof(port));
+
+            _logger = new Logger($"MyPhone-{number}");
 
             _name = name;
             _localIp = localIp;
@@ -159,6 +171,7 @@ namespace MySoftPhone
         /// <param name="number"></param>
         public void PickUp(string number)
         {
+            _logger.Information($"正在发送拨号或接起指令 {number}...");
             CallRemote($"PickUp#{number}");
         }
 
@@ -167,6 +180,7 @@ namespace MySoftPhone
         /// </summary>
         public void HangUp()
         {
+            _logger.Information("正在发送挂断指令...");
             CallRemote($"HangUp");
         }
 
