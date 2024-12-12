@@ -17,6 +17,7 @@ namespace MySoftPhone.RPC
         public event Action<string> MessageReceived;
         private readonly ConcurrentQueue<string> _messageConcurrentQueue = new ConcurrentQueue<string>();
         private readonly AutoResetEvent _autoResetEvent = new AutoResetEvent(false);
+        private readonly Logger _logger = new Logger("MyPhone-APC");
 
         private bool _stop;
 
@@ -36,8 +37,10 @@ namespace MySoftPhone.RPC
                     pipeServerInfo = argString.Replace(AnonymousPipeServer.ArgsPrefx, "");
                     continue;
                 }
+
                 _otherArgs.Add(argString);
             }
+
             if (string.IsNullOrWhiteSpace(pipeServerInfo)) throw new InvalidOperationException("输入参数中没有包含服务器信息的相关参数");
             var info = pipeServerInfo.Split(new char[] { '-' }, StringSplitOptions.RemoveEmptyEntries);
             if (info.Length != 2) throw new InvalidOperationException("服务器参数信息不正确");
@@ -85,11 +88,12 @@ namespace MySoftPhone.RPC
                             sw.Flush();
                             _writePipeStream.WaitForPipeDrain();
                         }
+
                         _autoResetEvent.WaitOne(1000);
                     }
                     catch (Exception exception)
                     {
-                        Trace.TraceError("[[MSP-SERVER-W]]" + exception);
+                        _logger.Error("写消息出错", exception);
                     }
                 }
             }
@@ -110,7 +114,7 @@ namespace MySoftPhone.RPC
                     }
                     catch (Exception exception)
                     {
-                        Trace.TraceError("[[MSP-SERVER-R]]" + exception);
+                        _logger.Error("读消息出错", exception);
                     }
                 }
             }

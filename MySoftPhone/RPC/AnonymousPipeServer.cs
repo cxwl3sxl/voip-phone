@@ -21,7 +21,7 @@ namespace MySoftPhone.RPC
         public event Action<string> MessageReceived;
         private readonly ConcurrentQueue<string> _messageConcurrentQueue = new ConcurrentQueue<string>();
         private readonly AutoResetEvent _autoResetEvent = new AutoResetEvent(false);
-
+        private readonly Logger _logger = new Logger("MyPhone-APS");
 
         private bool _stop;
 
@@ -81,11 +81,12 @@ namespace MySoftPhone.RPC
                             sw.Flush();
                             _writePipeServerStream.WaitForPipeDrain();
                         }
+
                         _autoResetEvent.WaitOne(1000);
                     }
                     catch (Exception exception)
                     {
-                        Trace.TraceError("[[MSP-SERVER-W]]" + exception);
+                        _logger.Error("写消息出错", exception);
                     }
                 }
             }
@@ -106,7 +107,7 @@ namespace MySoftPhone.RPC
                     }
                     catch (Exception exception)
                     {
-                        Trace.TraceError("[[MSP-SERVER-R]]" + exception);
+                        _logger.Error("读消息出错", exception);
                     }
                 }
             }

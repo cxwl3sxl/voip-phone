@@ -9,6 +9,8 @@ namespace MySoftPhone
 {
     class Program
     {
+        private static Logger _logger;
+
         /// <summary>
         /// Application Entry Point.
         /// </summary>
@@ -19,12 +21,15 @@ namespace MySoftPhone
         {
             if (args.Length == 0)
             {
+                _logger = new Logger("MyPhone-Main");
                 App app = new App();
                 app.InitializeComponent();
                 app.Run();
             }
             else
             {
+                _logger = new Logger($"MyPhone-Sub");
+                _logger.Information($"子进程正在启动，参数：{string.Join(" ", args)}");
                 if (File.Exists("debug.txt"))
                 {
                     MessageBox.Show($"请附加进程：{Process.GetCurrentProcess().Id} 然后点击确定开始调试");
@@ -35,12 +40,13 @@ namespace MySoftPhone
                 _parentProcess.ParentProcessExit += ParentProcess_ParentProcessExit;
                 if (_parentProcess.InputArgs.Length != 5)
                 {
-                    Trace.Write($"[MyPhone] 参数数量错误，即将关闭");
+                    _logger.Warning("参数数量错误，即将关闭");
                     return;
                 }
 
                 try
                 {
+                    _logger = new Logger($"MyPhone-Sub-{_parentProcess.InputArgs[1]}");
                     _realPhone = new RealPhone(_parentProcess.InputArgs[0],
                         _parentProcess.InputArgs[1],
                         _parentProcess.InputArgs[2],
@@ -52,7 +58,7 @@ namespace MySoftPhone
                 }
                 catch (Exception ex)
                 {
-                    Trace.Write($"[MyPhone] 初始化错误：{ex}");
+                    _logger.Error($"子进程初始化错误", ex);
                     _parentProcess.SendMessage($"$I:{ex.Message}");
                 }
 
@@ -63,26 +69,26 @@ namespace MySoftPhone
 
                 _realPhone?.Dispose();
 
-                Trace.Write($"[MyPhone] 子进程已退出");
+                _logger.Information("子进程已退出");
             }
         }
 
         private static bool _exit;
         private static void _realPhone_RaiseMessage(string obj)
         {
-            Trace.Write($"[MyPhone] RaiseMessage#{obj}");
+            _logger.Information($"正在向父进程发送消息：{obj}");
             _parentProcess.SendMessage($"$E:RaiseMessage#{obj}");
         }
 
         private static void _realPhone_StateMessageChanged(string obj)
         {
-            Trace.Write($"[MyPhone] StateMessageChanged#{obj}");
+            _logger.Information($"正在向父进程发送状态消息：{obj}");
             _parentProcess.SendMessage($"$E:StateMessageChanged#{obj}");
         }
 
         private static void _realPhone_StateChanged(PhoneState obj)
         {
-            Trace.Write($"[MyPhone] StateChanged#{obj}");
+            _logger.Information($"正在向父进程发送状态消息：{obj}");
             _parentProcess.SendMessage($"$E:StateChanged#{obj}");
         }
 
@@ -91,7 +97,7 @@ namespace MySoftPhone
 
         private static void ParentProcess_ParentProcessExit()
         {
-            Trace.Write($"[MyPhone] 检测到父进程退出");
+            _logger.Warning("检测到父进程退出");
             _exit = true;
         }
 

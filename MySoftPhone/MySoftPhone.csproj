@@ -79,6 +79,7 @@
     <Compile Include="LicenseWindow.xaml.cs">
       <DependentUpon>LicenseWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Logger.cs" />
     <Compile Include="PhoneProxy.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="RealPhone.cs" />

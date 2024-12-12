@@ -11,6 +11,7 @@ namespace MySoftPhone.RPC
         private bool _isSubProcessExit;
         private Process _subProcess;
         private readonly string _inputArgs;
+        private readonly Logger _logger = new Logger("MyPhone");
 
         private AnonymousPipeServer _anonymousPipeServer;
 
@@ -38,7 +39,7 @@ namespace MySoftPhone.RPC
             };
             _subProcess.Exited += SubProcess_Exited;
             _subProcess.Start();
-            Trace.Write($"[MyPhone] {_name}的子进程已启动：{_subProcess.Id}");
+            _logger.Information($"{_name}的子进程已启动：{_subProcess.Id}");
             _isSubProcessExit = false;
             _anonymousPipeServer.AfterSubProcessStart();
             _anonymousPipeServer.Start();
@@ -46,18 +47,20 @@ namespace MySoftPhone.RPC
 
         private void _anonymousPipeServer_MessageReceived(string obj)
         {
+            _logger.Information($"收到来自{_name}子进程的消息：{obj}");
             MessageReceived?.Invoke(this, obj);
         }
 
         private void SubProcess_Exited(object sender, EventArgs e)
         {
+            _logger.Information($"{_name}的子进程已退出");
             if (!_isSubProcessExit)
                 SubProcessExited?.Invoke(this);
         }
 
         public void Stop()
         {
-            Trace.Write($"[MyPhone] 正在终止{_name}的子进程：{_subProcess.Id}");
+            _logger.Information($"正在终止{_name}的子进程：{_subProcess.Id}");
             _anonymousPipeServer?.Stop();
             try
             {

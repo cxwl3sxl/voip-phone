@@ -22,7 +22,6 @@ namespace MySoftPhone.RPC
 
         public ParentProcess(string[] args)
         {
-            Trace.Write($"[MyPhone] 启动参数：{string.Join(" ", args)}");
             if (args.Length > 1 && args[0].StartsWith("$") && args[1].StartsWith("$"))
             {
                 _anonymousPipeClient = new AnonymousPipeClient(args[0].Substring(1));
