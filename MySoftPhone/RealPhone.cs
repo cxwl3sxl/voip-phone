@@ -1,10 +1,10 @@
 ﻿using Ozeki.VoIP;
-using Ozeki.VoIP.SDK;
 using System;
 using System.IO;
 using System.Net;
-using Ozeki.Media.MediaHandlers;
-using Ozeki.Network.Nat;
+using System.Text;
+using Ozeki.Media;
+using Ozeki.Network;
 
 namespace MySoftPhone
 {
@@ -26,11 +26,40 @@ namespace MySoftPhone
             _logger = new Logger($"MyPhone-{number}");
             if (File.Exists("license.txt"))
             {
-                string[] licenseInfo = File.ReadAllLines("license.txt");
-                var uid = licenseInfo.Length > 0 ? licenseInfo[0] : "";
-                var pwd = licenseInfo.Length > 1 ? licenseInfo[1] : "";
-                //http://geekwolke.com/2016/10/04/ozeki-voip-sip-sdk-license-code-free-download/
-                Ozeki.VoIP.SDK.Protection.LicenseManager.Instance.SetLicense(uid, pwd);
+                try
+                {
+                    string[] licenseInfo = File.ReadAllLines("license.txt");
+                    var uid = licenseInfo.Length > 0 ? licenseInfo[0] : "";
+                    var pwd = licenseInfo.Length > 1 ? licenseInfo[1] : "";
+                    //http://geekwolke.com/2016/10/04/ozeki-voip-sip-sdk-license-code-free-download/
+                    Ozeki.Common.LicenseManager.Instance.SetLicense(uid, pwd);
+                    //Ozeki.VoIP.SDK.Protection.LicenseManager.Instance.SetLicense(uid, pwd);
+                }
+                catch (Exception ex)
+                {
+                    _logger.Error("设置授权出错", ex);
+                }
+
+                try
+                {
+                    var sb = new StringBuilder();
+                    sb.AppendLine($"LicenseType: {Ozeki.Common.LicenseManager.Instance.LicenseType}");
+                    sb.AppendLine($"G729Enabled: {Ozeki.Common.LicenseManager.Instance.G729Enabled}");
+                    sb.AppendLine($"MaxFlashClient: {Ozeki.Common.LicenseManager.Instance.MaxFlashClient}");
+                    sb.AppendLine(
+                        $"MaxIPCameraConnection: {Ozeki.Common.LicenseManager.Instance.MaxIPCameraConnection}");
+                    sb.AppendLine($"MaxPhoneCall: {Ozeki.Common.LicenseManager.Instance.MaxPhoneCall}");
+                    sb.AppendLine($"MaxPhoneLine: {Ozeki.Common.LicenseManager.Instance.MaxPhoneLine}");
+                    sb.AppendLine($"MaxSilverlightClient: {Ozeki.Common.LicenseManager.Instance.MaxSilverlightClient}");
+                    sb.AppendLine(
+                        $"MaxWindowsPhoneClient: {Ozeki.Common.LicenseManager.Instance.MaxWindowsPhoneClient}");
+                    sb.AppendLine($"RemainingDays: {Ozeki.Common.LicenseManager.Instance.RemainingDays}");
+                    File.WriteAllText("license-info.txt", sb.ToString());
+                }
+                catch
+                {
+
+                }
             }
 
             softPhone = SoftPhoneFactory.CreateSoftPhone(IPAddress.Parse(localIp), 15000, 15500);
@@ -180,7 +209,7 @@ namespace MySoftPhone
             call.InstantMessageReceived -= Call_InstantMessageReceived;
         }
 
-        private void Call_InstantMessageReceived(object sender, Ozeki.VoIP.SIP.InstantMessage e)
+        private void Call_InstantMessageReceived(object sender, InstantMessage e)
         {
             _logger.Information($"收到消息 {e.Content}");
         }
